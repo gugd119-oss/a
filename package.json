@@ -1,0 +1,23 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gugd119-oss/a.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gugd119-oss/a/issues"
+  },
+  "homepage": "https://github.com/gugd119-oss/a#readme",
+  "description": "",
+  "dependencies": {
+    "puppeteer": "^24.16.2"
+  }
+}

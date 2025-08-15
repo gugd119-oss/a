@@ -1,18 +1,289 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" style="height: 100%;"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大吃小游戏 - 区块链版</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:wght@400;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Playfair+Display:wght@400;700&amp;family=Orbitron:wght@400;700;900&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"></noscript>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" media="all" onload="this.media='all'">
     <script src="https://cdn.jsdelivr.net/npm/fingerprintjs2@2.1.4/dist/fingerprint2.min.js"></script>
     <!-- 音效系统 -->
-    <audio id="winnerSound" preload="metadata" volume="0.8">
+    <style>
+            @keyframes loading-bar {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(0); }
+            }
+            
+            /* ==================== 现代科技风格主题 ==================== */
+            .modern-theme {
+                background: 
+                    linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #1a1a2e 75%, #0a0a0a 100%),
+                    radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+            }
+            
+            .modern-theme::before {
+                background-image: 
+                    radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.2) 0%, transparent 50%),
+                    radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.2) 0%, transparent 50%),
+                    linear-gradient(45deg, transparent 48%, rgba(0, 255, 255, 0.03) 49%, rgba(0, 255, 255, 0.03) 51%, transparent 52%);
+            }
+            
+            /* 现代风格卡片 */
+            .modern-theme .card {
+                background: rgba(0, 0, 0, 0.7);
+                border: 1px solid rgba(0, 255, 255, 0.3);
+                box-shadow: 
+                    0 8px 32px rgba(0, 255, 255, 0.2),
+                    0 0 0 1px rgba(0, 255, 255, 0.1),
+                    inset 0 1px 0 rgba(0, 255, 255, 0.1);
+            }
+            
+            .modern-theme .card:hover {
+                border: 1px solid rgba(0, 255, 255, 0.6);
+                box-shadow: 
+                    0 15px 40px rgba(0, 255, 255, 0.3),
+                    0 0 0 1px rgba(0, 255, 255, 0.3),
+                    inset 0 1px 0 rgba(0, 255, 255, 0.2);
+            }
+            
+            /* 现代风格卡片头部 */
+            .modern-theme .card-header {
+                background: linear-gradient(135deg, #00d4ff 0%, #ff00ff 100%);
+                font-family: 'Orbitron', 'Arial', sans-serif;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+            }
+            
+            .modern-theme .card-header::before {
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            }
+            
+            /* 现代风格按钮 */
+            .modern-theme .btn-primary {
+                background: linear-gradient(135deg, #00d4ff 0%, #ff00ff 100%);
+                border: 1px solid rgba(0, 255, 255, 0.5);
+                box-shadow: 
+                    0 4px 15px rgba(0, 212, 255, 0.4),
+                    0 0 0 1px rgba(0, 255, 255, 0.2);
+                font-family: 'Orbitron', 'Arial', sans-serif;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            
+            .modern-theme .btn-primary:hover {
+                background: linear-gradient(135deg, #ff00ff 0%, #00d4ff 100%);
+                box-shadow: 
+                    0 8px 25px rgba(255, 0, 255, 0.6),
+                    0 0 0 1px rgba(255, 0, 255, 0.3),
+                    0 0 20px rgba(0, 255, 255, 0.3);
+            }
+            
+            /* 现代风格牌桌 */
+            .modern-theme .game-table {
+                background: 
+                    radial-gradient(ellipse at center, #001122 0%, #002244 30%, #001122 100%),
+                    linear-gradient(45deg, #000011 0%, #002244 50%, #000011 100%);
+                border: none;
+                box-shadow: 
+                    0 20px 60px rgba(0, 255, 255, 0.3),
+                    0 0 0 2px #00d4ff,
+                    0 0 0 4px rgba(0, 212, 255, 0.3),
+                    inset 0 0 50px rgba(0, 255, 255, 0.1);
+            }
+            
+            .modern-theme .game-table:hover {
+                box-shadow: 
+                    0 25px 80px rgba(0, 255, 255, 0.4),
+                    0 0 0 2px #ff00ff,
+                    0 0 0 4px rgba(255, 0, 255, 0.3),
+                    inset 0 0 50px rgba(255, 0, 255, 0.1);
+            }
+            
+            .modern-theme .game-table::before {
+                background-image: 
+                    radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><defs><pattern id="circuit" patternUnits="userSpaceOnUse" width="60" height="60"><rect width="60" height="60" fill="none"/><path d="M10,10 L50,10 L50,50 L10,50 Z" stroke="rgba(0,255,255,0.1)" stroke-width="1" fill="none"/><circle cx="30" cy="30" r="5" stroke="rgba(0,255,255,0.2)" stroke-width="1" fill="none"/><path d="M0,30 L60,30 M30,0 L30,60" stroke="rgba(0,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="60" height="60" fill="url(%23circuit)"/></svg>');
+            }
+            
+            .modern-theme .game-table::after {
+                content: '◆ ◇ ◆ ◇';
+                color: rgba(0, 255, 255, 0.3);
+                text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+                animation: cyber-glow 2s ease-in-out infinite alternate;
+            }
+            
+            @keyframes cyber-glow {
+                0% { 
+                    opacity: 0.3; 
+                    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+                    transform: translate(-50%, -50%) scale(1);
+                }
+                100% { 
+                    opacity: 0.6; 
+                    text-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.4);
+                    transform: translate(-50%, -50%) scale(1.05);
+                }
+            }
+            
+            /* 现代风格扑克牌 */
+            .modern-theme .playing-card {
+                background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+                border: 2px solid #00d4ff;
+                box-shadow: 
+                    0 8px 25px rgba(0, 255, 255, 0.3),
+                    0 0 0 1px rgba(0, 255, 255, 0.2),
+                    inset 0 1px 0 rgba(0, 255, 255, 0.1);
+                color: #00d4ff;
+            }
+            
+            .modern-theme .playing-card::before {
+                background: linear-gradient(145deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.05) 100%);
+            }
+            
+            .modern-theme .playing-card:hover {
+                border: 2px solid #ff00ff;
+                box-shadow: 
+                    0 15px 40px rgba(255, 0, 255, 0.4),
+                    0 0 0 2px rgba(255, 0, 255, 0.3),
+                    inset 0 1px 0 rgba(255, 0, 255, 0.2),
+                    0 0 20px rgba(0, 255, 255, 0.3);
+            }
+            
+            .modern-theme .playing-card.card-back {
+                background: 
+                    linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #1a1a2e 75%, #0a0a0a 100%),
+                    radial-gradient(circle at 30% 30%, rgba(0, 255, 255, 0.2) 0%, transparent 50%);
+                border: 2px solid #00d4ff;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><defs><pattern id="cybercardback" patternUnits="userSpaceOnUse" width="50" height="50"><rect width="50" height="50" fill="none"/><circle cx="25" cy="25" r="15" fill="none" stroke="rgba(0,255,255,0.3)" stroke-width="2"/><path d="M10,10 L40,40 M40,10 L10,40" stroke="rgba(255,0,255,0.2)" stroke-width="1"/><rect x="20" y="20" width="10" height="10" fill="none" stroke="rgba(0,255,255,0.4)" stroke-width="1"/></pattern></defs><rect width="50" height="50" fill="url(%23cybercardback)"/></svg>');
+            }
+            
+            .modern-theme .playing-card.card-back::after {
+                background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.4), transparent);
+            }
+            
+            /* 现代风格玩家头像 */
+            .modern-theme .player-avatar {
+                border: 2px solid rgba(0, 255, 255, 0.5);
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            }
+            
+            /* 现代风格座位 */
+            .modern-theme .player-seat {
+                background-color: rgba(0, 0, 0, 0.8);
+                border: 1px solid rgba(0, 255, 255, 0.3);
+                box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+            }
+            
+            /* 现代风格赢家效果 */
+            .modern-theme .winner {
+                background-color: rgba(0, 255, 255, 0.1);
+                border: 2px solid #00d4ff;
+                box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            }
+            
+            @keyframes modern-winner-pulse {
+                0% {
+                    box-shadow: 0 0 20px #00d4ff, 0 0 35px #ff00ff, 0 0 50px rgba(0, 255, 255, 0.5);
+                    transform: scale(1.2) rotateY(0deg);
+                }
+                50% {
+                    box-shadow: 0 0 30px #ff00ff, 0 0 50px #00d4ff, 0 0 70px rgba(255, 0, 255, 0.7);
+                    transform: scale(1.25) rotateY(0deg);
+                }
+                100% {
+                    box-shadow: 0 0 20px #00d4ff, 0 0 35px #ff00ff, 0 0 50px rgba(0, 255, 255, 0.5);
+                    transform: scale(1.2) rotateY(0deg);
+                }
+            }
+            
+            /* 现代风格导航栏 */
+            .modern-theme .navbar {
+                background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%) !important;
+                border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+                box-shadow: 0 2px 20px rgba(0, 255, 255, 0.2);
+            }
+            
+            .modern-theme .navbar-brand {
+                font-family: 'Orbitron', sans-serif !important;
+                font-weight: 700;
+                color: #00d4ff !important;
+                text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            }
+            
+            .modern-theme .nav-link {
+                font-family: 'Orbitron', sans-serif !important;
+                color: rgba(0, 255, 255, 0.8) !important;
+                transition: all 0.3s ease;
+            }
+            
+            .modern-theme .nav-link:hover,
+            .modern-theme .nav-link.active {
+                color: #ff00ff !important;
+                text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+            }
+            
+            /* 现代风格表格 */
+            .modern-theme .table {
+                color: rgba(0, 255, 255, 0.9);
+            }
+            
+            .modern-theme .table th {
+                border-color: rgba(0, 255, 255, 0.3);
+                color: #00d4ff;
+                font-family: 'Orbitron', sans-serif;
+            }
+            
+            .modern-theme .table td {
+                border-color: rgba(0, 255, 255, 0.2);
+            }
+            
+            .modern-theme .table-hover tbody tr:hover {
+                background-color: rgba(0, 255, 255, 0.1);
+            }
+            
+            /* 现代风格徽章 */
+            .modern-theme .badge {
+                background: linear-gradient(135deg, #00d4ff 0%, #ff00ff 100%) !important;
+                font-family: 'Orbitron', sans-serif;
+                text-shadow: none;
+            }
+            
+            /* 现代风格输入框 */
+            .modern-theme .form-control {
+                background: rgba(0, 0, 0, 0.5);
+                border: 1px solid rgba(0, 255, 255, 0.3);
+                color: #00d4ff;
+            }
+            
+            .modern-theme .form-control:focus {
+                background: rgba(0, 0, 0, 0.7);
+                border-color: #ff00ff;
+                box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+                color: #ff00ff;
+            }
+            
+            /* 现代风格警告框 */
+            .modern-theme .alert {
+                background: rgba(0, 0, 0, 0.8);
+                border: 1px solid rgba(0, 255, 255, 0.3);
+                color: #00d4ff;
+            }
+            
+            .modern-theme .alert-warning {
+                border-color: rgba(255, 193, 7, 0.3);
+                color: #ffc107;
+            }
+            
+            .modern-theme .alert-success {
+                border-color: rgba(0, 255, 255, 0.3);
+                color: #00d4ff;
+            }
+        </style><link type="text/css" rel="stylesheet" charset="UTF-8" href="https://www.gstatic.com/_/translate_http/_/ss/k=translate_http.tr.pgV-E-68K-A.L.W.O/am=gMA/d=0/rs=AN8SPfpszKJssl6IA0boGClFdsaAZGtXEQ/m=el_main_css"><script type="text/javascript" charset="UTF-8" src="https://translate.googleapis.com/_/translate_http/_/js/k=translate_http.tr.en_US.La1ZHVMN3q8.O/am=AAAE/d=1/exm=el_conf/ed=1/rs=AN8SPfqdQVymTA-PVfsV3ztTkrS5GbnPiQ/m=el_main"></script></head><body class="classic-theme" style="position: relative; min-height: 100%; top: 0px;"><audio id="winnerSound" preload="metadata" volume="0.8">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" type="audio/mpeg">
         <source src="https://www.soundjay.com/misc/sounds/casino-win.mp3" type="audio/mpeg">
     </audio>
@@ -26,7 +297,7 @@
     <audio id="betSound" preload="metadata" volume="0.3">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-casino-chip-1003.mp3" type="audio/mpeg">
     </audio>
-    <audio id="backgroundMusic" preload="metadata" volume="0.1" loop>
+    <audio id="backgroundMusic" preload="metadata" volume="0.1" loop="">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-casino-ambience-2005.mp3" type="audio/mpeg">
     </audio>
 <style>
@@ -913,8 +1184,8 @@
             }
          }
     </style>
-</head>
-<body>
+
+
     <div id="loading" style="display: none;">
         <div class="spinner-border text-light" role="status">
             <span class="visually-hidden">加载中...</span>
@@ -991,7 +1262,7 @@
                     <p>比大小是一款经典扑克牌游戏，规则简单、节奏快，老少皆宜，一玩就上瘾：</p>
                     <ul>
                         <li><strong>玩家人数：</strong>2-6人，每人发一张牌。</li>
-                        <li><strong>牌面计算：</strong>点数 = (牌值 % 13) + 1，即：A=1，2-10 按面值，J=11，Q=12，K=13（最大）。点数越大越好：K(13) > Q(12) > J(11) > 10 > ... > 2 > A(1)。</li>
+                        <li><strong>牌面计算：</strong>点数 = (牌值 % 13) + 1，即：A=1，2-10 按面值，J=11，Q=12，K=13（最大）。点数越大越好：K(13) &gt; Q(12) &gt; J(11) &gt; 10 &gt; ... &gt; 2 &gt; A(1)。</li>
                         <li><strong>胜负规则：</strong>得分最高者胜，按点数从高到低依次"吃"其他玩家的下注（大吃小）。赢家吃完低排名玩家的下注后，剩余下注退回。</li>
                         <li><strong>费用扣除：</strong>每次吃牌扣除3%平台费、2%房主费、2%邀请者费（若有邀请者）。<span class="text-success">🎯 新机制：赢家的邀请者获得分润，更符合人性！</span>平台费由合伙人按比例（1%-50%）分润，总分成上限80%。</li>
                         <li><strong>单人情况：</strong>若3分钟内只有1人下注，玩家可点击"开牌"，系统自动全额退款。</li>
@@ -1061,7 +1332,7 @@
         </div>
 
         <!-- 房间列表页面 -->
-        <div id="roomsPage">
+        <div id="roomsPage" style="display: block;">
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="card">
@@ -1123,7 +1394,7 @@
                             <div class="mb-3">
                                 <label class="form-label text-success">我的邀请链接：</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="myInviteLink" readonly placeholder="连接钱包后生成邀请链接">
+                                    <input type="text" class="form-control" id="myInviteLink" readonly="" placeholder="连接钱包后生成邀请链接">
                                     <button class="btn btn-primary" onclick="copyInviteLink()" title="复制链接">
                                         <i class="bi bi-copy"></i> 复制
                                     </button>
@@ -1344,7 +1615,7 @@
         </div>
     </div>
 
-    </div>
+    
 
         <!-- 游戏规则页面 -->
         <div id="gameRulesPage" style="display: none;">
@@ -1390,7 +1661,7 @@
                                         </h2>
                                         <div id="winRule1" class="accordion-collapse collapse" data-bs-parent="#winRulesAccordion">
                                             <div class="accordion-body">
-                                                <strong>点数越大越好：</strong>K(13点) > Q(12点) > J(11点) > 10 > 9 > ... > 2 > A(1点)
+                                                <strong>点数越大越好：</strong>K(13点) &gt; Q(12点) &gt; J(11点) &gt; 10 &gt; 9 &gt; ... &gt; 2 &gt; A(1点)
                                             </div>
                                         </div>
                                     </div>
@@ -1888,7 +2159,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    
 
     <!-- 游戏结果模态框 -->
     <div class="modal fade" id="gameResultModal" tabindex="-1">
@@ -1921,7 +2192,7 @@
                 <div class="modal-body">
                     <p>分享以下链接邀请好友加入房间，您将获得他们赢得金额的2%作为奖励：</p>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="inviteLink" readonly>
+                        <input type="text" class="form-control" id="inviteLink" readonly="">
                         <button class="btn btn-outline-secondary" id="copyInviteLink">复制</button>
                     </div>
                 </div>
@@ -1932,12 +2203,12 @@
         </div>
     </div>
     
-</body>
-</html>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer=""></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js" defer=""></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js" defer=""></script>
 <script>
     // 合约地址和ABI - 更新为新部署的代理合约地址
     const contractAddress = "0x1bE3D277678197FF35305898E7470ffE96523977";
@@ -11174,5 +11445,5 @@ ${inviteLink}`;
         
     </script>
 
-</body>
-</html>
+
+<button class="btn btn-outline-light btn-sm position-fixed" style="top: 20px; right: 20px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); transition: 0.3s;"><i class="bi bi-volume-up-fill"></i></button><button class="btn btn-outline-light btn-sm position-fixed" style="top: 80px; right: 20px; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); transition: 0.3s;"><i class="bi bi-palette-fill"></i></button><div class="VIpgJd-ZVi9od-aZ2wEe-wOHMyf"><div class="VIpgJd-ZVi9od-aZ2wEe-OiiCO"><svg xmlns="http://www.w3.org/2000/svg" class="VIpgJd-ZVi9od-aZ2wEe" width="96px" height="96px" viewBox="0 0 66 66"><circle class="VIpgJd-ZVi9od-aZ2wEe-Jt5cK" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg></div></div></body></html>
