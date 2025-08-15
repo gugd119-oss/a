@@ -923,37 +923,39 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">大吃小游戏</a>
+            <a class="navbar-brand" href="#" data-i18n="brand.title">大吃小游戏</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="margin-right: 60px;">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
+
                     <li class="nav-item">
-                        <a class="nav-link active" href="#" id="roomsTab">房间列表</a>
+                        <a class="nav-link active" href="#" id="roomsTab" data-i18n="nav.rooms">房间列表</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="gameTab">游戏界面</a>
+                        <a class="nav-link" href="#" id="gameTab" data-i18n="nav.game">游戏界面</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="historyTab">历史记录</a>
+                        <a class="nav-link" href="#" id="historyTab" data-i18n="nav.history">历史记录</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="helpDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="helpDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="nav.help">
                             帮助中心
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" id="gameRulesTab">游戏规则</a></li>
-                            <li><a class="dropdown-item" href="#" id="profitSharingTab">分润说明</a></li>
-                            <li><a class="dropdown-item" href="#" id="contactUsTab">联系我们</a></li>
+                            <li><a class="dropdown-item" href="#" id="gameRulesTab" data-i18n="nav.rules">游戏规则</a></li>
+                            <li><a class="dropdown-item" href="#" id="profitSharingTab" data-i18n="nav.profit">分润说明</a></li>
+                            <li><a class="dropdown-item" href="#" id="contactUsTab" data-i18n="nav.contact">联系我们</a></li>
                         </ul>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center text-white">
                     <div id="walletInfo" class="me-2">
-                        <span id="walletAddress">未连接钱包</span>
+                        <span id="walletAddress" data-i18n="wallet.disconnected">未连接钱包</span>
                     </div>
-                    <button id="connectWalletBtn" class="btn btn-outline-light btn-sm me-2">连接钱包</button>
+                    <button id="connectWalletBtn" class="btn btn-outline-light btn-sm me-2" data-i18n="wallet.connect">连接钱包</button>
+
                 </div>
             </div>
         </div>
@@ -961,7 +963,7 @@
 
     <div class="container mt-4">
         <!-- 钱包连接提示 -->
-        <div id="walletAlert" class="alert alert-warning" role="alert">
+        <div id="walletAlert" class="alert alert-warning" role="alert" data-i18n="wallet.connectTip">
             请先连接您的钱包以使用游戏功能
         </div>
 
@@ -4699,8 +4701,8 @@
                 console.error("获取账户失败:", error);
             }
         } else {
-            console.log('未检测到Web3钱包');
-            alert('请安装MetaMask钱包插件或在钱包应用的浏览器中打开');
+            console.log('未检测到钱包环境');
+            // 不弹窗，保留顶部提示，引导用户在任意钱包的 DApp 浏览器中打开
         }
     }
 
@@ -4856,12 +4858,7 @@
             
             // 统一的钱包连接处理 - 移动端和桌面端使用相同逻辑
             if (typeof window.ethereum === 'undefined') {
-                console.log('未检测到Web3钱包');
-                if (isMobile) {
-                    alert('请在支持Web3的浏览器中打开（如MetaMask浏览器、TokenPocket浏览器等），或确保已安装钱包应用');
-                } else {
-                    alert('请安装MetaMask钱包插件以使用本应用');
-                }
+                console.log('未检测到钱包环境');
                 showLoading(false);
                 return false;
             }
@@ -4879,35 +4876,24 @@
                     accounts = await provider.send("eth_requestAccounts", []);
                     console.log('成功获取账户:', accounts);
                 } catch (requestError) {
-                    // 特别处理open_metamask_install_page错误
+                    // 特别处理安装页错误
                     if (requestError.message && requestError.message.includes('open_metamask_install_page')) {
-                        console.error('MetaMask连接错误 (open_metamask_install_page):', requestError);
-                        
-                        // 尝试使用替代方法连接
+                        console.error('钱包连接错误 (open_metamask_install_page):', requestError);
                         try {
-                            console.log('尝试使用替代方法连接MetaMask...');
-                            // 尝试使用enable方法（旧API）
+                            // 旧 API 兜底
                             accounts = await window.ethereum.enable();
-                            console.log('使用替代方法连接成功');
+                            console.log('使用 enable() 连接成功');
                         } catch (altError) {
-                            console.error('替代连接方法也失败:', altError);
-                            alert('无法连接到MetaMask。请尝试以下步骤:\n\n' +
-                                  '1. 刷新页面\n' +
-                                  '2. 确保MetaMask已安装且解锁\n' +
-                                  '3. 如果问题仍然存在，请重启浏览器');
+                            console.error('enable() 也失败:', altError);
                             showLoading(false);
                             return false;
                         }
                     } else if (requestError.code === 4001 || (requestError.message && requestError.message.includes('User rejected'))) {
-                        // 用户拒绝连接请求
                         console.warn("用户拒绝了连接请求:", requestError);
-                        alert('您拒绝了连接请求。如需使用本应用，请允许连接到MetaMask钱包。');
                         showLoading(false);
                         return false;
                     } else {
-                        // 其他请求错误
-                        console.error('MetaMask连接请求失败:', requestError);
-                        alert('连接MetaMask失败: ' + (requestError.message || JSON.stringify(requestError)) + '\n\n请刷新页面重试。');
+                        console.error('钱包连接请求失败:', requestError);
                         showLoading(false);
                         return false;
                     }
@@ -4916,7 +4902,6 @@
                 // 确保获取到有效账户
                 if (!accounts || accounts.length === 0) {
                     console.error('未能获取钱包账户');
-                    alert('未能获取钱包账户，请确保MetaMask已解锁并授权本网站访问。');
                     showLoading(false);
                     return false;
                 }
@@ -5069,24 +5054,9 @@
                     }
                 } else if (error.message && error.message.includes('open_metamask_install_page')) {
                     console.error("钱包未正确初始化:", error);
-                    if (isMobile) {
-                        alert('钱包连接失败。请尝试以下步骤:\n\n' +
-                              '1. 确保在钱包应用的内置浏览器中打开\n' +
-                              '2. 或在支持Web3的浏览器中打开\n' +
-                              '3. 刷新页面重试');
-                    } else {
-                        alert('MetaMask未正确初始化。请尝试以下步骤:\n\n' +
-                              '1. 确保MetaMask已正确安装\n' +
-                              '2. 刷新页面\n' +
-                              '3. 解锁MetaMask钱包');
-                    }
                 } else {
                     if (isMobile) {
-                        alert('钱包连接失败。请确保:\n\n' +
-                              '1. 在钱包应用的浏览器中打开本页面\n' +
-                              '2. 或使用支持Web3的浏览器\n' +
-                              '3. 钱包已解锁\n\n' +
-                              '错误详情: ' + (error.message || '未知错误'));
+                        console.warn('移动端钱包连接失败: ' + (error.message || '未知错误'));
                     } else {
                         alert('连接钱包失败: ' + (error.message || JSON.stringify(error)) + '\n\n请刷新页面重试。');
                     }
@@ -8413,25 +8383,8 @@ ${inviteLink}`;
                 showLoading(false);
                 
                 // 显示详细的引导信息
-                const guideModal = confirm(
-                    '🔗 移动端连接建议\n\n' +
-                    '为了获得最佳体验，建议您：\n\n' +
-                    '1. 打开 MetaMask 应用\n' +
-                    '2. 点击底部"浏览器"标签\n' +
-                    '3. 在地址栏输入当前网址\n\n' +
-                    '点击"确定"尝试打开MetaMask\n' +
-                    '点击"取消"继续当前连接'
-                );
-                
-                if (guideModal) {
-                    // 尝试打开MetaMask应用
-                    const metamaskUrl = `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
-                    window.open(metamaskUrl, '_blank');
-                    return false;
-                } else {
-                    // 用户选择继续，重新显示加载状态
-                    showLoading(true);
-                }
+                // 简化引导：不中断，直接继续尝试连接
+                showLoading(true);
             }
             
             // 在钱包浏览器中或用户选择继续，尝试连接
@@ -9011,62 +8964,17 @@ ${inviteLink}`;
         document.getElementById('loading').style.display = show ? 'flex' : 'none';
     }
 
-    // 检查MetaMask是否安装并正确初始化
+    // 检查是否存在可用的钱包环境（通用，兼容多钱包）
     function checkMetaMaskInstalled() {
-        // 检查ethereum对象是否存在
         if (typeof window.ethereum === 'undefined') {
-            console.log('MetaMask未安装');
-            // 显示安装指导
-            const message = '请安装MetaMask钱包插件以使用本应用。\n\n' +
-                           '您可以访问 https://metamask.io/download/ 下载安装，' +
-                           '安装完成后请刷新页面。';
-            alert(message);
+            console.log('未检测到钱包');
             return false;
         }
-        
-        // 检查是否是MetaMask提供的以太坊对象
-        if (!window.ethereum.isMetaMask) {
-            console.log('检测到非MetaMask的以太坊提供者');
-            alert('请使用MetaMask钱包插件，其他钱包可能不兼容。\n\n' +
-                  '如果您已安装MetaMask但仍看到此消息，请尝试刷新页面或重启浏览器。');
+        if (!window.ethereum.request || typeof window.ethereum.request !== 'function') {
+            console.error('钱包 API 不完整');
             return false;
         }
-        
-        // 检查MetaMask是否已锁定
-        try {
-            // 尝试获取MetaMask锁定状态（如果API支持）
-            if (window.ethereum._metamask && typeof window.ethereum._metamask.isUnlocked === 'function') {
-                window.ethereum._metamask.isUnlocked().then(unlocked => {
-                    if (!unlocked) {
-                        console.log('MetaMask已锁定');
-                        // 提示用户解锁MetaMask
-                        alert('您的MetaMask钱包已锁定，请解锁后重试。\n\n' +
-                              '点击浏览器工具栏中的MetaMask图标，输入密码解锁。');
-                    }
-                }).catch(err => {
-                    console.error('检查MetaMask锁定状态失败:', err);
-                });
-            }
-        } catch (error) {
-            console.error('检查MetaMask状态时出错:', error);
-            // 不中断流程，继续尝试使用MetaMask
-        }
-        
-        // 检查MetaMask是否正确初始化
-        try {
-            // 尝试访问一些基本方法，确保MetaMask正常工作
-            if (!window.ethereum.request || typeof window.ethereum.request !== 'function') {
-                console.error('MetaMask API不完整');
-                alert('MetaMask似乎未正确初始化。请刷新页面或重启浏览器后重试。');
-                return false;
-            }
-        } catch (error) {
-            console.error('验证MetaMask功能时出错:', error);
-            alert('验证MetaMask功能时出错。请刷新页面或重启浏览器后重试。');
-            return false;
-        }
-        
-        console.log('MetaMask已安装且正常初始化');
+        console.log('检测到钱包环境');
         return true;
     }
     
@@ -11263,7 +11171,8 @@ ${inviteLink}`;
                 console.error('更新最小下注额度显示失败:', error);
             }
         }
-
+        
     </script>
+
 </body>
 </html>
