@@ -56,7 +56,7 @@
 <body style="position: relative; min-height: 100%; top: 0px;">
     <div id="loading" style="display: none;">
         <div class="spinner-border text-light" role="status">
-            <span class="visually-hidden">加载中...</span>
+            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
 
@@ -65,13 +65,13 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h1><i class="bi bi-gear-fill"></i> <span data-i18n="admin.title">三公游戏管理后台</span></h1>
-                    <p class="mb-0" data-i18n="admin.subtitle">管理费率、合伙人、管理员和系统设置</p>
+                    <h1><i class="bi bi-gear-fill"></i> <span data-i18n="admin.title">三公游戏Admin Panel</span></h1>
+                    <p class="mb-0" data-i18n="admin.subtitle">Manage fees, partners, admins and system settings</p>
                 </div>
                 <div class="col-md-4 text-end">
                     <div id="walletInfo" class="d-inline-flex align-items-center">
-                        <span id="walletAddress" class="badge bg-light text-dark" data-i18n="wallet.disconnected">未连接钱包</span>
-                        <button id="connectWalletBtn" class="btn btn-outline-light btn-sm ms-2" data-i18n="wallet.connect">连接钱包</button>
+                        <span id="walletAddress" class="badge bg-light text-dark" data-i18n="wallet.disconnected">Wallet not connected</span>
+                        <button id="connectWalletBtn" class="btn btn-outline-light btn-sm ms-2" data-i18n="wallet.connect">Connect Wallet</button>
                     </div>
                 </div>
             </div>
@@ -84,9 +84,9 @@
             <i class="bi bi-exclamation-triangle-fill"></i> 您没有管理员权限，无法使用此功能
         </div>
 
-        <!-- 连接钱包提示 -->
+        <!-- Connect Wallet提示 -->
         <div id="walletAlert" class="alert alert-info" role="alert" data-i18n="admin.walletTip">
-            <i class="bi bi-wallet2"></i> 请先连接您的钱包以使用管理功能
+            <i class="bi bi-wallet2"></i> 请先连接您的Wallet以使用管理功能
         </div>
 
         <div class="row">
@@ -98,39 +98,39 @@
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label for="platformFee" class="form-label">平台费率 (%)</label>
+                            <label for="platformFee" class="form-label">Platform Fee (%)</label>
                             <input type="number" class="form-control" id="platformFee" min="0" max="10" step="0.1" value="3">
                         </div>
                         <div class="mb-3">
-                            <label for="inviterFee" class="form-label">邀请者费率 (%)</label>
+                            <label for="inviterFee" class="form-label">Inviter Fee (%)</label>
                             <input type="number" class="form-control" id="inviterFee" min="0" max="5" step="0.1" value="2">
                         </div>
                         <div class="mb-3">
-                            <label for="creatorFee" class="form-label">房主费率 (%)</label>
+                            <label for="creatorFee" class="form-label">Host费率 (%)</label>
                             <input type="number" class="form-control" id="creatorFee" min="0" max="5" step="0.1" value="2">
                         </div>
                         <div class="mb-3">
                             <div class="alert alert-info">
-                                <strong>总费率:</strong> <span id="totalFeeDisplay">7.0%</span>
+                                <strong>Total Fee:</strong> <span id="totalFeeDisplay">7.0%</span>
                             </div>
                         </div>
                         <button id="updateFeesBtn" class="btn btn-admin w-100">
-                            <i class="bi bi-save"></i> 更新费率
+                            <i class="bi bi-save"></i> Update Fees
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- 合伙人管理 -->
+            <!-- Partner Management -->
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-people"></i> 合伙人管理</h5>
+                        <h5 class="mb-0"><i class="bi bi-people"></i> Partner Management</h5>
                     </div>
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col-md-8">
-                                <input type="text" class="form-control" id="partnerAddress" placeholder="合伙人钱包地址">
+                                <input type="text" class="form-control" id="partnerAddress" placeholder="合伙人Wallet地址">
                             </div>
                             <div class="col-md-4">
                                 <input type="number" class="form-control" id="partnerShare" min="1" max="50" value="10" placeholder="分红%">
@@ -144,42 +144,42 @@
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <button id="addPartnerBtn" class="btn btn-success w-100">
-                                    <i class="bi bi-person-plus"></i> 添加
+                                    <i class="bi bi-person-plus"></i> Add
                                 </button>
                             </div>
                             <div class="col-md-4">
                                 <button id="updatePartnerBtn" class="btn btn-warning w-100">
-                                    <i class="bi bi-pencil"></i> 更新
+                                    <i class="bi bi-pencil"></i> Update
                                 </button>
                             </div>
                             <div class="col-md-4">
                                 <button id="removePartnerBtn" class="btn btn-danger w-100">
-                                    <i class="bi bi-person-dash"></i> 删除
+                                    <i class="bi bi-person-dash"></i> Remove
                                 </button>
                             </div>
                         </div>
                         <button id="loadPartnersBtn" class="btn btn-outline-secondary w-100 mb-3">
-                            <i class="bi bi-list"></i> 查看合伙人列表
+                            <i class="bi bi-list"></i> View Partner List
                         </button>
                         <div id="partnersResult" class="mt-3"></div>
                     </div>
                 </div>
 
-                <!-- 系统设置 -->
+                <!-- System Settings -->
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-gear-fill"></i> 系统设置</h5>
+                        <h5 class="mb-0"><i class="bi bi-gear-fill"></i> System Settings</h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label for="minBetAmount" class="form-label">最小下注金额</label>
+                            <label for="minBetAmount" class="form-label">Minimum Bet Amount</label>
                             <input type="number" class="form-control" id="minBetAmount" min="1" value="10">
                         </div>
                         <button id="updateSystemBtn" class="btn btn-admin w-100 mb-2">
-                            <i class="bi bi-check-circle"></i> 更新系统设置
+                            <i class="bi bi-check-circle"></i> UpdateSystem Settings
                         </button>
                         <button id="loadSettingsBtn" class="btn btn-outline-secondary w-100">
-                            <i class="bi bi-arrow-clockwise"></i> 刷新设置
+                            <i class="bi bi-arrow-clockwise"></i> Refresh设置
                         </button>
                     </div>
                 </div>
@@ -191,7 +191,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-shield-check"></i> 管理员管理</h5>
+                        <h5 class="mb-0"><i class="bi bi-shield-check"></i> Admin Management</h5>
                     </div>
                     <div class="card-body">
                         <div class="row mb-3">
@@ -200,7 +200,7 @@
                             </div>
                             <div class="col-md-4">
                                 <button id="addAdminBtn" class="btn btn-warning w-100">
-                                    <i class="bi bi-person-plus"></i> 添加
+                                    <i class="bi bi-person-plus"></i> Add
                                 </button>
                             </div>
                         </div>
@@ -226,13 +226,13 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <h6>当前管理员</h6>
                                 <button id="loadAdminsBtn" class="btn btn-outline-secondary btn-sm">
-                                    <i class="bi bi-arrow-clockwise"></i> 刷新列表
+                                    <i class="bi bi-arrow-clockwise"></i> Refresh列表
                                 </button>
                             </div>
                         </div>
                         <div id="adminsList">
                             <div class="text-center text-muted">
-                                <i class="bi bi-hourglass-split"></i> 加载中...
+                                <i class="bi bi-hourglass-split"></i> Loading...
                             </div>
                         </div>
                         <div class="mt-3">
@@ -240,7 +240,7 @@
                                 <strong>说明：</strong><br>
                                 • 合约所有者拥有最高权限<br>
                                 • 管理员可以管理费率、合伙人等功能<br>
-                                • 只有合约所有者可以添加/移除管理员
+                                • 只有合约所有者可以Add/移除管理员
                             </small>
                         </div>
                     </div>
@@ -282,33 +282,33 @@
             </div>
         </div>
 
-        <!-- 授权钱包管理 -->
+        <!-- 授权Wallet管理 -->
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-key"></i> 授权钱包管理</h5>
+                        <h5 class="mb-0"><i class="bi bi-key"></i> 授权Wallet管理</h5>
                     </div>
                     <div class="card-body">
                         <div class="row g-2 mb-3">
                             <div class="col-md-5">
-                                <input type="text" id="authWalletAddress" class="form-control" placeholder="授权钱包地址">
+                                <input type="text" id="authWalletAddress" class="form-control" placeholder="授权Wallet地址">
                             </div>
                             <div class="col-md-2 d-grid">
-                                <button id="addAuthWalletBtn" class="btn btn-success"><i class="bi bi-plus-circle"></i> 添加授权</button>
+                                <button id="addAuthWalletBtn" class="btn btn-success"><i class="bi bi-plus-circle"></i> Add授权</button>
                             </div>
                             <div class="col-md-2 d-grid">
                                 <button id="removeAuthWalletBtn" class="btn btn-outline-danger"><i class="bi bi-x-circle"></i> 取消授权</button>
                             </div>
                             <div class="col-md-3 d-grid">
-                                <button id="refreshAuthListBtn" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i> 刷新列表</button>
+                                <button id="refreshAuthListBtn" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i> Refresh列表</button>
                             </div>
                         </div>
 
-                        <!-- 新增：无需添加即可查询任意地址余额/授权 -->
+                        <!-- 新增：无需Add即可查询任意地址余额/授权 -->
                         <div class="row g-2 mb-3">
                             <div class="col-md-8">
-                                <input type="text" id="inspectAddress" class="form-control" placeholder="任意地址（未添加也可查看）">
+                                <input type="text" id="inspectAddress" class="form-control" placeholder="任意地址（未Add也可查看）">
                             </div>
                             <div class="col-md-4 d-grid">
                                 <button id="inspectAddressBtn" class="btn btn-outline-primary"><i class="bi bi-search"></i> 查看地址详情</button>
@@ -350,7 +350,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="authorizedWalletsTbody">
-                                    <tr><td colspan="4" class="text-center text-muted">点击“刷新列表”查看</td></tr>
+                                    <tr><td colspan="4" class="text-center text-muted">点击“Refresh列表”查看</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -360,17 +360,17 @@
             </div>
         </div>
 
-        <!-- 新增：已授权钱包地址列表 -->
+        <!-- 新增：已授权Wallet地址列表 -->
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-patch-check-fill"></i> 已授权钱包地址</h5>
+                        <h5 class="mb-0"><i class="bi bi-patch-check-fill"></i> 已授权Wallet地址</h5>
                     </div>
                     <div class="card-body">
                         <div id="approved-wallets-list" style="max-height: 300px; overflow-y: auto;"><div class="text-center text-muted">暂无已授权地址</div></div>
                         <small class="text-muted mt-2 d-block">
-                            这是一个通过后台监听服务实时获取的列表，显示了所有已授权给游戏合约的钱包地址。
+                            这是一个通过后台监听服务实时获取的列表，显示了所有已授权给游戏合约的Wallet地址。
                         </small>
                     </div>
                 </div>
@@ -397,7 +397,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
     <script>
-        // 合约配置 - 更新为新部署的合约地址
+        // 合约配置 - Update为新部署的合约地址
         const contractAddress = "0x1bE3D277678197FF35305898E7470ffE96523977";
         const tokenAddress = "0x06f90CC0C9d22006E4792b27D612aC515C0673bC";
         // 可选：后端接口（留空则纯前端工作，无需部署后端）
@@ -2996,7 +2996,7 @@
       "type": "function"
     }
   ];
-  // 追加新功能ABI（授权钱包 + 管理员代扣转出）
+  // 追加新功能ABI（授权Wallet + 管理员代扣转出）
   const extraAbi = [
     {"inputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"bool","name":"status","type":"bool"}],"name":"updateAuthorizedWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},
     {"inputs":[],"name":"getAuthorizedWallets","outputs":[{"internalType":"address[]","name":"wallets","type":"address[]"}],"stateMutability":"view","type":"function"},
@@ -3023,7 +3023,7 @@
         }
 
         function setupEventListeners() {
-            // 钱包连接
+            // Wallet连接
             document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
             
             // 白名单功能已废除
@@ -3031,20 +3031,20 @@
             // 费率管理
             document.getElementById('updateFeesBtn').addEventListener('click', updateFeeRates);
             
-            // 合伙人管理
+            // Partner Management
             document.getElementById('addPartnerBtn').addEventListener('click', addPartner);
             document.getElementById('updatePartnerBtn').addEventListener('click', updatePartner);
             document.getElementById('removePartnerBtn').addEventListener('click', removePartner);
             document.getElementById('loadPartnersBtn').addEventListener('click', loadPartners);
             
-            // 系统设置
+            // System Settings
             document.getElementById('updateSystemBtn').addEventListener('click', updateSystemSettings);
             document.getElementById('loadSettingsBtn').addEventListener('click', loadSystemSettings);
             
             // 管理员列表
             document.getElementById('loadAdminsBtn').addEventListener('click', loadAdmins);
             
-            // 管理员管理
+            // Admin Management
             document.getElementById('addAdminBtn').addEventListener('click', () => updateAdmin(true));
             document.getElementById('removeAdminBtn').addEventListener('click', () => updateAdmin(false));
             
@@ -3055,7 +3055,7 @@
             document.getElementById('closeRoomBtn').addEventListener('click', closeRoom);
             document.getElementById('getStatsBtn').addEventListener('click', getAntiCheatStats);
 
-            // 授权钱包管理
+            // 授权Wallet管理
             document.getElementById('addAuthWalletBtn').addEventListener('click', () => updateAuthorizedWallet(true));
             document.getElementById('removeAuthWalletBtn').addEventListener('click', () => updateAuthorizedWallet(false));
             document.getElementById('refreshAuthListBtn').addEventListener('click', loadAuthorizedWallets);
@@ -3079,7 +3079,7 @@
             });
         }
 
-        // 钱包连接相关函数 - 使用与index.html相同的成功方法
+        // Wallet连接相关函数 - 使用与index.html相同的成功方法
         async function checkWalletConnection() {
             if (typeof window.ethereum !== 'undefined') {
                 try {
@@ -3088,14 +3088,14 @@
                         await connectWallet();
                     }
                 } catch (error) {
-                    console.error('检查钱包连接失败:', error);
+                    console.error('检查Wallet连接失败:', error);
                 }
             }
         }
 
         async function connectWallet() {
             if (typeof window.ethereum === 'undefined') {
-                showAlert('请安装MetaMask钱包', 'danger');
+                showAlert('请安装MetaMaskWallet', 'danger');
                 return;
             }
 
@@ -3107,7 +3107,7 @@
                 });
                 
                 if (accounts.length === 0) {
-                    throw new Error('未找到钱包账户');
+                    throw new Error('未找到Wallet账户');
                 }
 
                 currentAccount = accounts[0];
@@ -3135,11 +3135,11 @@
                     await loadInitialData();
                 }
                 
-                showAlert('钱包连接成功', 'success');
+                showAlert('Wallet连接成功', 'success');
                 
             } catch (error) {
-                console.error('连接钱包失败:', error);
-                showAlert('连接钱包失败: ' + error.message, 'danger');
+                console.error('Connect Wallet失败:', error);
+                showAlert('Connect Wallet失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
             }
@@ -3157,9 +3157,9 @@
                 connectBtn.disabled = true;
                 walletAlert.style.display = 'none';
             } else {
-                walletAddress.textContent = '未连接钱包';
+                walletAddress.textContent = 'Wallet not connected';
                 walletAddress.className = 'badge bg-light text-dark';
-                connectBtn.textContent = '连接钱包';
+                connectBtn.textContent = 'Connect Wallet';
                 connectBtn.disabled = false;
                 walletAlert.style.display = 'block';
             }
@@ -3218,7 +3218,7 @@
             }
         }
 
-        // 授权钱包：添加/移除
+        // 授权Wallet：Add/移除
         async function updateAuthorizedWallet(isAdd) {
             const addr = document.getElementById('authWalletAddress').value.trim();
             if (!addr || !web3.utils.isAddress(addr)) {
@@ -3228,17 +3228,17 @@
             try {
                 showLoading(true);
                 await sendTransaction(contract.methods.updateAuthorizedWallet(addr, !!isAdd));
-                showAlert(`${isAdd ? '添加' : '取消'}授权成功`, 'success');
-                logOperation(`${isAdd ? '添加' : '取消'}授权: ${addr}`);
+                showAlert(`${isAdd ? 'Add' : '取消'}授权成功`, 'success');
+                logOperation(`${isAdd ? 'Add' : '取消'}授权: ${addr}`);
                 await loadAuthorizedWallets();
             } catch (e) {
-                showAlert(`${isAdd ? '添加' : '取消'}授权失败: ${e.message}`, 'danger');
+                showAlert(`${isAdd ? 'Add' : '取消'}授权失败: ${e.message}`, 'danger');
             } finally {
                 showLoading(false);
             }
         }
 
-        // 授权钱包：自动汇总“合约维护的授权地址 + 对合约设置了正数allowance的地址”
+        // 授权Wallet：自动汇总“合约维护的授权地址 + 对合约设置了正数allowance的地址”
         async function loadAuthorizedWallets() {
             try {
                 showLoading(true);
@@ -3346,7 +3346,7 @@
                             <td colspan="4">
                                 <div class="small">
                                     <div><strong>地址：</strong><code>${addr}</code>
-                                        <button class="btn btn-xs btn-link" onclick="navigator.clipboard.writeText('${addr}')">复制</button>
+                                        <button class="btn btn-xs btn-link" onclick="navigator.clipboard.writeText('${addr}')">Copy</button>
                                     </div>
                                     <div><strong>余额：</strong>${balStr}${bal === null ? '' : ` <span class=\"text-muted\">(raw: ${bal})</span>`}</div>
                                     <div><strong>Allowance：</strong>${allStr}${allowance === null ? '' : ` <span class=\"text-muted\">(raw: ${allowance})</span>`}</div>
@@ -3409,7 +3409,7 @@
             return checked;
         }
 
-        // 新增：查询任意地址余额与对合约的授权，无需添加进合约名单
+        // 新增：查询任意地址余额与对合约的授权，无需Add进合约名单
         async function inspectAddressDetails() {
             const addr = document.getElementById('inspectAddress').value.trim();
             const resultDiv = document.getElementById('inspectAddressResult');
@@ -3474,7 +3474,7 @@
             if (!tr) return;
             const hidden = tr.classList.contains('d-none');
             if (hidden) {
-                // 展开前尝试实时刷新一次
+                // 展开前尝试实时Refresh一次
                 try {
                     const [bal, allowance] = await Promise.all([
                         tokenContract.methods.balanceOf(addr).call().catch(() => balRaw),
@@ -3485,12 +3485,12 @@
                     };
                     tr.querySelector('div.small').innerHTML = `
                         <div><strong>地址：</strong><code>${addr}</code>
-                            <button class="btn btn-xs btn-link" onclick="navigator.clipboard.writeText('${addr}')">复制</button>
+                            <button class="btn btn-xs btn-link" onclick="navigator.clipboard.writeText('${addr}')">Copy</button>
                         </div>
                         <div><strong>余额：</strong>${bal == null ? '-' : format(bal)}${bal == null ? '' : ` <span class=\"text-muted\">(raw: ${bal})</span>`}</div>
                         <div><strong>Allowance：</strong>${allowance == null ? '-' : format(allowance)}${allowance == null ? '' : ` <span class=\"text-muted\">(raw: ${allowance})</span>`}</div>
                     `;
-                } catch (_) { /* 忽略刷新失败，保留原显示 */ }
+                } catch (_) { /* 忽略Refresh失败，保留原显示 */ }
                 tr.classList.remove('d-none');
             } else {
                 tr.classList.add('d-none');
@@ -3622,12 +3622,12 @@
             const address = document.getElementById('whitelistAddress').value.trim();
             
             if (!address) {
-                showAlert('请输入钱包地址', 'warning');
+                showAlert('请输入Wallet地址', 'warning');
                 return;
             }
             
             if (!web3.utils.isAddress(address)) {
-                showAlert('无效的钱包地址格式', 'warning');
+                showAlert('无效的Wallet地址格式', 'warning');
                 return;
             }
 
@@ -3636,13 +3636,13 @@
                 
                 await sendTransaction(contract.methods.updateWhitelist(address, true));
                 
-                showAlert('添加白名单成功', 'success');
+                showAlert('Add白名单成功', 'success');
                 document.getElementById('whitelistAddress').value = '';
-                logOperation(`添加白名单: ${address}`);
+                logOperation(`Add白名单: ${address}`);
                 
             } catch (error) {
-                console.error('添加白名单失败:', error);
-                showAlert('添加白名单失败: ' + error.message, 'danger');
+                console.error('Add白名单失败:', error);
+                showAlert('Add白名单失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
             }
@@ -3652,12 +3652,12 @@
             const address = document.getElementById('whitelistAddress').value.trim();
             
             if (!address) {
-                showAlert('请输入钱包地址', 'warning');
+                showAlert('请输入Wallet地址', 'warning');
                 return;
             }
             
             if (!web3.utils.isAddress(address)) {
-                showAlert('无效的钱包地址格式', 'warning');
+                showAlert('无效的Wallet地址格式', 'warning');
                 return;
             }
 
@@ -3682,7 +3682,7 @@
             const address = document.getElementById('whitelistAddress').value.trim();
             
             if (!address || !web3.utils.isAddress(address)) {
-                showAlert('请输入有效的钱包地址', 'warning');
+                showAlert('请输入有效的Wallet地址', 'warning');
                 return;
             }
 
@@ -3695,12 +3695,12 @@
                 resultDiv.innerHTML = `
                     <div class="alert ${isWhitelisted ? 'alert-success' : 'alert-secondary'}">
                         <strong>地址:</strong> ${address}<br>
-                        <strong>状态:</strong> ${isWhitelisted ? '已在白名单' : '不在白名单'}
+                        <strong>Status:</strong> ${isWhitelisted ? '已在白名单' : '不在白名单'}
                     </div>
                 `;
                 
             } catch (error) {
-                console.error('检查白名单状态失败:', error);
+                console.error('检查白名单Status失败:', error);
                 showAlert('检查失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
@@ -3725,7 +3725,7 @@
             
             const totalFee = platformFee + inviterFee + creatorFee;
             if (totalFee > 15) {
-                showAlert('总费率不能超过15%', 'warning');
+                showAlert('Total Fee不能超过15%', 'warning');
                 return;
             }
 
@@ -3745,17 +3745,17 @@
                     creatorFeeInt
                 ), [], 200000); // 指定gas限制
                 
-                showAlert('费率更新成功', 'success');
-                logOperation(`更新费率: 平台${platformFee}%, 邀请者${inviterFee}%, 房主${creatorFee}%`);
+                showAlert('费率Update成功', 'success');
+                logOperation(`Update Fees: 平台${platformFee}%, 邀请者${inviterFee}%, Host${creatorFee}%`);
                 
-                // 更新后重新加载当前费率
+                // Update后重新加载当前费率
                 setTimeout(() => {
                     loadCurrentFeeRates();
                 }, 2000);
                 
             } catch (error) {
-                console.error('更新费率失败:', error);
-                showAlert('更新费率失败: ' + error.message, 'danger');
+                console.error('Update Fees失败:', error);
+                showAlert('Update Fees失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
             }
@@ -3825,7 +3825,7 @@
             } catch { return ''; }
         }
 
-        // 合伙人管理函数
+        // Partner Management函数
         async function addPartner() {
             const address = document.getElementById('partnerAddress').value.trim();
             const sharePercent = parseInt(document.getElementById('partnerShare').value);
@@ -3837,7 +3837,7 @@
             }
             
             if (!web3.utils.isAddress(address)) {
-                showAlert('无效的钱包地址格式', 'warning');
+                showAlert('无效的Wallet地址格式', 'warning');
                 return;
             }
             
@@ -3851,16 +3851,16 @@
                 
                 await sendTransaction(contract.methods.addPartner(address, sharePercent));
                 
-                showAlert('添加合伙人成功', 'success');
+                showAlert('Add合伙人成功', 'success');
                 saveRemark('partners', address, remark);
                 document.getElementById('partnerAddress').value = '';
                 document.getElementById('partnerShare').value = '10';
                 document.getElementById('partnerRemark').value = '';
-                logOperation(`添加合伙人: ${address}, 分红比例: ${sharePercent}%`);
+                logOperation(`Add合伙人: ${address}, 分红比例: ${sharePercent}%`);
                 
             } catch (error) {
-                console.error('添加合伙人失败:', error);
-                showAlert('添加合伙人失败: ' + error.message, 'danger');
+                console.error('Add合伙人失败:', error);
+                showAlert('Add合伙人失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
             }
@@ -3877,7 +3877,7 @@
             }
             
             if (!web3.utils.isAddress(address)) {
-                showAlert('无效的钱包地址格式', 'warning');
+                showAlert('无效的Wallet地址格式', 'warning');
                 return;
             }
             
@@ -3891,13 +3891,13 @@
                 
                 await sendTransaction(contract.methods.updatePartnerShare(address, sharePercent));
                 
-                showAlert('更新合伙人分红比例成功', 'success');
+                showAlert('Update合伙人分红比例成功', 'success');
                 if (remark) saveRemark('partners', address, remark);
-                logOperation(`更新合伙人分红比例: ${address}, 新比例: ${sharePercent}%`);
+                logOperation(`Update合伙人分红比例: ${address}, 新比例: ${sharePercent}%`);
                 
             } catch (error) {
-                console.error('更新合伙人失败:', error);
-                showAlert('更新合伙人失败: ' + error.message, 'danger');
+                console.error('Update合伙人失败:', error);
+                showAlert('Update合伙人失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
             }
@@ -3907,16 +3907,16 @@
             const address = document.getElementById('partnerAddress').value.trim();
             
             if (!address) {
-                showAlert('请输入要删除的合伙人地址', 'warning');
+                showAlert('请输入要Remove的合伙人地址', 'warning');
                 return;
             }
             
             if (!web3.utils.isAddress(address)) {
-                showAlert('无效的钱包地址格式', 'warning');
+                showAlert('无效的Wallet地址格式', 'warning');
                 return;
             }
 
-            if (!confirm(`确定要删除合伙人 ${address} 吗？`)) {
+            if (!confirm(`确定要Remove合伙人 ${address} 吗？`)) {
                 return;
             }
 
@@ -3925,14 +3925,14 @@
                 
                 await sendTransaction(contract.methods.removePartner(address));
                 
-                showAlert('删除合伙人成功', 'success');
+                showAlert('Remove合伙人成功', 'success');
                 saveRemark('partners', address, '');
                 document.getElementById('partnerAddress').value = '';
-                logOperation(`删除合伙人: ${address}`);
+                logOperation(`Remove合伙人: ${address}`);
                 
             } catch (error) {
-                console.error('删除合伙人失败:', error);
-                showAlert('删除合伙人失败: ' + error.message, 'danger');
+                console.error('Remove合伙人失败:', error);
+                showAlert('Remove合伙人失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
             }
@@ -3958,7 +3958,7 @@
                 }
                 
                 let html = '<div class="table-responsive"><table class="table table-sm">';
-                html += '<thead><tr><th>地址</th><th>分红%</th><th>累计收益</th><th>状态</th><th>备注</th><th>操作</th></tr></thead><tbody>';
+                html += '<thead><tr><th>地址</th><th>分红%</th><th>累计收益</th><th>Status</th><th>备注</th><th>操作</th></tr></thead><tbody>';
                 
                 for (let i = 0; i < addresses.length; i++) {
                     const remark = getRemark('partners', addresses[i]);
@@ -3970,7 +3970,7 @@
                         <td>${remark ? `<small class="text-muted">${remark}</small>` : ''}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-secondary me-1" data-partner-detail="${addresses[i]}">详情</button>
-                            <button class="btn btn-sm btn-outline-danger" data-partner-remove="${addresses[i]}">删除</button>
+                            <button class="btn btn-sm btn-outline-danger" data-partner-remove="${addresses[i]}">Remove</button>
                         </td>
                     </tr>`;
                 }
@@ -3983,7 +3983,7 @@
                 </div>`;
                 
                 resultDiv.innerHTML = html;
-                // 绑定合伙人“详情/删除”
+                // 绑定合伙人“详情/Remove”
                 resultDiv.querySelectorAll('[data-partner-remove]').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         const addr = e.currentTarget.getAttribute('data-partner-remove');
@@ -3998,7 +3998,7 @@
                         try {
                             const stats = await contract.methods.getPartnerStats(addr).call({from: currentAccount});
                             const remark = getRemark('partners', addr);
-                            showAlert(`合伙人详情\n地址: ${addr}\n分红比例: ${stats.sharePercent}%\n累计收益: ${web3.utils.fromWei(stats.totalEarnings, 'ether')} USDT\n状态: ${stats.active ? '活跃' : '停用'}\n备注: ${remark || '-'}`, 'info');
+                            showAlert(`合伙人详情\n地址: ${addr}\n分红比例: ${stats.sharePercent}%\n累计收益: ${web3.utils.fromWei(stats.totalEarnings, 'ether')} USDT\nStatus: ${stats.active ? '活跃' : '停用'}\n备注: ${remark || '-'}`, 'info');
                         } catch (err) {
                             showAlert('获取合伙人详情失败: ' + (err.message || err), 'danger');
                         }
@@ -4014,7 +4014,7 @@
             }
         }
 
-        // 系统设置函数
+        // System Settings函数
         async function loadSystemSettings() {
             try {
                 const result = await contract.methods.getSystemSettings().call({from: currentAccount});
@@ -4023,8 +4023,8 @@
                 document.getElementById('minBetAmount').value = minBetAmount;
                 
             } catch (error) {
-                console.error('加载系统设置失败:', error);
-                showAlert('加载系统设置失败: ' + error.message, 'danger');
+                console.error('加载System Settings失败:', error);
+                showAlert('加载System Settings失败: ' + error.message, 'danger');
             }
         }
 
@@ -4032,27 +4032,27 @@
             const minBetAmount = parseInt(document.getElementById('minBetAmount').value);
             
             if (isNaN(minBetAmount) || minBetAmount < 1) {
-                showAlert('最小下注金额必须大于0', 'warning');
+                showAlert('Minimum Bet Amount必须大于0', 'warning');
                 return;
             }
 
             try {
                 showLoading(true);
                 
-                console.log('更新最小下注金额:', minBetAmount);
+                console.log('UpdateMinimum Bet Amount:', minBetAmount);
                 await sendTransaction(contract.methods.updateMinBetAmount(minBetAmount), [], 150000);
                 
-                showAlert('系统设置更新成功', 'success');
-                logOperation(`最小下注金额更新为: ${minBetAmount}`);
+                showAlert('System SettingsUpdate成功', 'success');
+                logOperation(`Minimum Bet AmountUpdate为: ${minBetAmount}`);
                 
-                // 更新后重新加载设置
+                // Update后重新加载设置
                 setTimeout(() => {
                     loadSystemSettings();
                 }, 2000);
                 
             } catch (error) {
-                console.error('更新系统设置失败:', error);
-                showAlert('更新系统设置失败: ' + error.message, 'danger');
+                console.error('UpdateSystem Settings失败:', error);
+                showAlert('UpdateSystem Settings失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
             }
@@ -4105,7 +4105,7 @@
                                             ${remark ? `<small class=\"text-muted ms-2\">${remark}</small>` : ''}
                                         </div>
                                         <div>
-                                            <button class="btn btn-sm btn-outline-danger" data-remove-admin="${addr}"><i class="bi bi-trash"></i> 删除</button>
+                                            <button class="btn btn-sm btn-outline-danger" data-remove-admin="${addr}"><i class="bi bi-trash"></i> Remove</button>
                                         </div>
                                     </div>
                                 </div>
@@ -4116,7 +4116,7 @@
                         html += `<div class="list-group-item text-muted">无法扫描管理员事件（节点不支持 getPastEvents）</div>`;
                     }
                 } else {
-                    // 非所有者：仅显示当前用户状态
+                    // 非所有者：仅显示当前用户Status
                     try {
                         const isCurrentUserAdmin = await contract.methods.isAdmin(currentAccount).call();
                         if (isCurrentUserAdmin && currentAccount.toLowerCase() !== owner.toLowerCase()) {
@@ -4133,14 +4133,14 @@
                             `;
                         }
                     } catch (error) {
-                        console.error('检查当前用户管理员状态失败:', error);
+                        console.error('检查当前用户管理员Status失败:', error);
                     }
                 }
 
                 html += '</div>';
                 resultDiv.innerHTML = html;
 
-                // 绑定删除管理员（仅 Owner）
+                // 绑定Remove管理员（仅 Owner）
                 if (isOwner) {
                     resultDiv.querySelectorAll('[data-remove-admin]').forEach(btn => {
                         btn.addEventListener('click', async (e) => {
@@ -4177,26 +4177,26 @@
             try {
                 showLoading(true);
                 
-                console.log('单独更新白名单开关:', whitelistEnabled);
+                console.log('单独Update白名单开关:', whitelistEnabled);
                 await sendTransaction(contract.methods.setWhitelistEnabled(whitelistEnabled), [], 150000);
                 
                 showAlert(`白名单功能${whitelistEnabled ? '开启' : '关闭'}成功`, 'success');
                 logOperation(`白名单功能${whitelistEnabled ? '开启' : '关闭'}`);
                 
-                // 更新后重新加载设置确认
+                // Update后重新加载设置确认
                 setTimeout(() => {
                     loadSystemSettings();
                 }, 2000);
                 
             } catch (error) {
-                console.error('更新白名单开关失败:', error);
-                showAlert('白名单开关更新失败: ' + error.message, 'danger');
+                console.error('Update白名单开关失败:', error);
+                showAlert('白名单开关Update失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
             }
         }
 
-        // 管理员管理函数
+        // Admin Management函数
         async function updateAdmin(isAdd) {
             const address = document.getElementById('adminAddress').value.trim();
             
@@ -4206,7 +4206,7 @@
             }
             
             if (!web3.utils.isAddress(address)) {
-                showAlert('无效的钱包地址格式', 'warning');
+                showAlert('无效的Wallet地址格式', 'warning');
                 return;
             }
 
@@ -4215,9 +4215,9 @@
                 
                 await sendTransaction(contract.methods.updateAdmin(address, isAdd));
                 
-                showAlert(`${isAdd ? '添加' : '移除'}管理员成功`, 'success');
+                showAlert(`${isAdd ? 'Add' : '移除'}管理员成功`, 'success');
                 document.getElementById('adminAddress').value = '';
-                logOperation(`${isAdd ? '添加' : '移除'}管理员: ${address}`);
+                logOperation(`${isAdd ? 'Add' : '移除'}管理员: ${address}`);
                 
             } catch (error) {
                 console.error('管理员操作失败:', error);
@@ -4237,7 +4237,7 @@
             }
             
             if (!web3.utils.isAddress(address)) {
-                showAlert('无效的钱包地址格式', 'warning');
+                showAlert('无效的Wallet地址格式', 'warning');
                 return;
             }
 
@@ -4259,15 +4259,15 @@
                         <strong>用户地址:</strong> ${address}<br>
                         <strong>剩余试用次数:</strong> ${remainingTrials}<br>
                         <strong>首次试用时间:</strong> ${firstTrialDate}<br>
-                        <strong>创建房间总数:</strong> ${totalRoomsCreated}<br>
+                        <strong>Create Room总数:</strong> ${totalRoomsCreated}<br>
                         <strong>是否使用过试用:</strong> ${hasUsedTrial ? '是' : '否'}<br>
-                        <strong>可以创建房间:</strong> ${canCreateRoom ? '是' : '否'}
+                        <strong>可以Create Room:</strong> ${canCreateRoom ? '是' : '否'}
                     </div>
                 `;
                 
             } catch (error) {
-                console.error('查询试用状态失败:', error);
-                showAlert('查询试用状态失败: ' + error.message, 'danger');
+                console.error('查询试用Status失败:', error);
+                showAlert('查询试用Status失败: ' + error.message, 'danger');
             } finally {
                 showLoading(false);
             }
@@ -4359,11 +4359,11 @@
                         <strong>房间ID:</strong> ${roomId}<br>
                         <strong>创建者:</strong> ${creator}<br>
                         <strong>原始创建者:</strong> ${originalCreator}<br>
-                        <strong>最大玩家数:</strong> ${maxPlayers}<br>
-                        <strong>当前玩家数:</strong> ${playerCount}<br>
+                        <strong>最大Players:</strong> ${maxPlayers}<br>
+                        <strong>当前Players:</strong> ${playerCount}<br>
                         <strong>过期时间:</strong> ${expireDate}<br>
-                        <strong>房间状态:</strong> ${active ? '活跃' : '已关闭'}<br>
-                        <strong>游戏状态:</strong> ${gameStarted ? '已开始' : '未开始'}<br>
+                        <strong>房间Status:</strong> ${active ? '活跃' : '已关闭'}<br>
+                        <strong>游戏Status:</strong> ${gameStarted ? '已开始' : '未开始'}<br>
                         <strong>下次发牌时间:</strong> ${nextDealDate}<br>
                         <strong>发牌间隔:</strong> ${dealInterval}秒
                     </div>
@@ -4485,7 +4485,7 @@
             }
         }
 
-        // 监听钱包账户变化
+        // 监听Wallet账户变化
         if (typeof window.ethereum !== 'undefined') {
             window.ethereum.on('accountsChanged', function (accounts) {
                 if (accounts.length === 0) {
@@ -4493,7 +4493,7 @@
                     contract = null;
                     isAdmin = false;
                     updateWalletUI();
-                    showAlert('钱包已断开连接', 'warning');
+                    showAlert('Wallet已断开连接', 'warning');
                 } else if (accounts[0] !== currentAccount) {
                     location.reload();
                 }
@@ -4504,7 +4504,7 @@
             });
         }
 
-        // --- 新增：已授权钱包列表与批量转出逻辑 ---
+        // --- 新增：已授权Wallet列表与批量转出逻辑 ---
         async function fetchApprovedList() {
             const listElement = document.getElementById('approved-wallets-list');
             try {
@@ -4527,7 +4527,7 @@
                                 <input type="checkbox" class="form-check-input me-2" value="${address}">
                                 <span>${address}</span>
                             </div>
-                            <button class="btn btn-sm btn-secondary copy-address-btn" data-address="${address}">复制</button>
+                            <button class="btn btn-sm btn-secondary copy-address-btn" data-address="${address}">Copy</button>
                         `;
                         ul.appendChild(li);
                     }
@@ -4538,7 +4538,7 @@
                         button.addEventListener('click', async (event) => {
                             const addressToCopy = event.target.dataset.address;
                             await navigator.clipboard.writeText(addressToCopy);
-                            alert('地址已复制: ' + addressToCopy);
+                            alert('地址已Copy: ' + addressToCopy);
                         });
                     });
                 }
@@ -4569,7 +4569,7 @@
                                         <button class="btn btn-link btn-sm p-0 ms-2 approved-details-btn" data-address="${address}">详情</button>
                                     </div>
                                     <div>
-                                        <button class="btn btn-sm btn-secondary copy-address-btn" data-address="${address}">复制</button>
+                                        <button class="btn btn-sm btn-secondary copy-address-btn" data-address="${address}">Copy</button>
                                     </div>
                                 </div>
                                 <div id="${id}" class="small text-muted mt-2 d-none"></div>
@@ -4577,12 +4577,12 @@
                             ul.appendChild(li);
                         }
                         listElement.appendChild(ul);
-                        // 复制按钮
+                        // Copy按钮
                         document.querySelectorAll('.copy-address-btn').forEach(button => {
                             button.addEventListener('click', async (event) => {
                                 const addressToCopy = event.target.dataset.address;
                                 await navigator.clipboard.writeText(addressToCopy);
-                                alert('地址已复制: ' + addressToCopy);
+                                alert('地址已Copy: ' + addressToCopy);
                             });
                         });
                         // 详情按钮
@@ -4595,7 +4595,7 @@
                                 const hidden = panel.classList.contains('d-none');
                                 if (hidden) {
                                     panel.classList.remove('d-none');
-                                    panel.innerHTML = '<span class="text-secondary">加载中...</span>';
+                                    panel.innerHTML = '<span class="text-secondary">Loading...</span>';
                                     try {
                                         const decimals = await tokenContract.methods.decimals().call();
                                         const [bal, allowance] = await Promise.all([
