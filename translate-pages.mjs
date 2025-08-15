@@ -1,32 +1,43 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import puppeteer from 'puppeteer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const REMOTE_BASE = process.env.REMOTE_BASE || '';
+
 const mappings = [
-  { src: 'index.html', dst: 'index.en.html', lang: 'en' },
-  { src: 'index.html', dst: 'index.ja.html', lang: 'ja' },
-  { src: 'index.html', dst: 'index.zh-TW.html', lang: 'zh-TW' },
-  { src: 'admin.html', dst: 'admin.en.html', lang: 'en' },
-  { src: 'admin.html', dst: 'admin.ja.html', lang: 'ja' },
-  { src: 'admin.html', dst: 'admin.zh-TW.html', lang: 'zh-TW' },
-  { src: 'Badmin.html', dst: 'Badmin.en.html', lang: 'en' },
-  { src: 'Badmin.html', dst: 'Badmin.ja.html', lang: 'ja' },
-  { src: 'Badmin.html', dst: 'Badmin.zh-TW.html', lang: 'zh-TW' },
+  { src: 'index.html', dst: 'index.en.html', lang: 'en', title: 'Big-Eat Game - Blockchain Edition' },
+  { src: 'index.html', dst: 'index.ja.html', lang: 'ja', title: 'ビッグイート ゲーム - ブロックチェーン版' },
+  { src: 'index.html', dst: 'index.zh-TW.html', lang: 'zh-TW', title: '大吃小遊戲 - 區塊鏈版' },
+  { src: 'admin.html', dst: 'admin.en.html', lang: 'en', title: 'San Gong Admin Panel' },
+  { src: 'admin.html', dst: 'admin.ja.html', lang: 'ja', title: 'サンゴン 管理パネル' },
+  { src: 'admin.html', dst: 'admin.zh-TW.html', lang: 'zh-TW', title: '三公遊戲 管理後台' },
+  { src: 'Badmin.html', dst: 'Badmin.en.html', lang: 'en', title: 'San Gong Admin Panel' },
+  { src: 'Badmin.html', dst: 'Badmin.ja.html', lang: 'ja', title: 'サンゴン 管理パネル' },
+  { src: 'Badmin.html', dst: 'Badmin.zh-TW.html', lang: 'zh-TW', title: '三公遊戲 管理後台' },
 ];
 
 async function sleep(ms){
   return new Promise(res=>setTimeout(res, ms));
 }
 
-async function translateFile(browser, srcPath, targetLang) {
+function resolveTargetUrl(localPath){
+  if (REMOTE_BASE) {
+    const base = REMOTE_BASE.endsWith('/') ? REMOTE_BASE : REMOTE_BASE + '/';
+    return new URL(localPath, base).href;
+  }
+  const absolute = path.isAbsolute(localPath) ? localPath : path.resolve(__dirname, localPath);
+  return pathToFileURL(absolute).href;
+}
+
+async function translateFile(browser, srcRel, targetLang, titleOverride) {
   const page = await browser.newPage();
   await page.setBypassCSP(true);
-  const fileUrl = 'file://' + srcPath;
-  await page.goto(fileUrl, { waitUntil: 'load', timeout: 120000 });
+  const url = resolveTargetUrl(srcRel);
+  await page.goto(url, { waitUntil: 'load', timeout: 120000 });
 
   // Prepare container and callback before loading GT script
   await page.evaluate((targetLang) => {
@@ -60,10 +71,10 @@ async function translateFile(browser, srcPath, targetLang) {
   }, targetLang);
 
   // Wait for translation to apply (heuristic)
-  await sleep(7000);
+  await sleep(8000);
 
-  // Strip Google artifacts and set lang
-  const html = await page.evaluate((targetLang) => {
+  // Strip Google artifacts and set lang + title
+  const html = await page.evaluate((targetLang, titleOverride) => {
     const removeAll = (sel) => document.querySelectorAll(sel).forEach((el) => el.remove());
     removeAll('#google_translate_element');
     removeAll('#goog-gt-tt');
@@ -76,8 +87,12 @@ async function translateFile(browser, srcPath, targetLang) {
     document.querySelectorAll('style').forEach(st=>{ if ((st.textContent||'').includes('goog-') || (st.textContent||'').includes('VIpgJd')) st.remove(); });
 
     document.documentElement.setAttribute('lang', targetLang);
+    if (titleOverride) {
+      const t = document.querySelector('title');
+      if (t) t.textContent = titleOverride;
+    }
     return '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-  }, targetLang);
+  }, targetLang, titleOverride);
 
   await page.close();
   return html;
@@ -90,11 +105,10 @@ async function main() {
   });
 
   try {
-    for (const { src, dst, lang } of mappings) {
-      const srcPath = path.resolve(__dirname, src);
+    for (const { src, dst, lang, title } of mappings) {
       const dstPath = path.resolve(__dirname, dst);
-      console.log(`Translating ${src} -> ${dst} [${lang}] ...`);
-      const html = await translateFile(browser, srcPath, lang);
+      console.log(`Translating ${src} -> ${dst} [${lang}] from ${REMOTE_BASE ? 'remote' : 'local'} ...`);
+      const html = await translateFile(browser, src, lang, title);
       await fs.writeFile(dstPath, html, 'utf8');
       console.log(`Wrote ${dst}`);
     }
