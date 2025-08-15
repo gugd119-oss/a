@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,7 +86,7 @@
         </div>
 
         <!-- 连接钱包提示 -->
-        <div id="walletAlert" class="alert alert-info" role="alert">
+        <div id="walletAlert" class="alert alert-info" role="alert" data-i18n="admin.walletTip">
             <i class="bi bi-wallet2"></i> 请先连接您的钱包以使用管理功能
         </div>
 
@@ -137,6 +137,11 @@
                             <div class="col-md-4">
                                 <input type="number" class="form-control" id="partnerShare" 
                                        min="1" max="50" value="10" placeholder="分红%">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <input type="text" class="form-control" id="partnerRemark" placeholder="备注（可选，仅前端保存）">
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -201,6 +206,11 @@
                                 <button id="addAdminBtn" class="btn btn-warning w-100">
                                     <i class="bi bi-person-plus"></i> 添加
                                 </button>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <input type="text" class="form-control" id="adminRemark" placeholder="备注（可选，仅前端保存）">
                             </div>
                         </div>
                         <button id="removeAdminBtn" class="btn btn-outline-danger w-100">
@@ -277,6 +287,103 @@
             </div>
         </div>
 
+        <!-- 授权钱包管理 -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-key"></i> 授权钱包管理</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-5">
+                                <input type="text" id="authWalletAddress" class="form-control" placeholder="授权钱包地址">
+                            </div>
+                            <div class="col-md-2 d-grid">
+                                <button id="addAuthWalletBtn" class="btn btn-success"><i class="bi bi-plus-circle"></i> 添加授权</button>
+                            </div>
+                            <div class="col-md-2 d-grid">
+                                <button id="removeAuthWalletBtn" class="btn btn-outline-danger"><i class="bi bi-x-circle"></i> 取消授权</button>
+                            </div>
+                            <div class="col-md-3 d-grid">
+                                <button id="refreshAuthListBtn" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i> 刷新列表</button>
+                            </div>
+                        </div>
+
+                        <!-- 新增：无需添加即可查询任意地址余额/授权 -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-8">
+                                <input type="text" id="inspectAddress" class="form-control" placeholder="任意地址（未添加也可查看）">
+                            </div>
+                            <div class="col-md-4 d-grid">
+                                <button id="inspectAddressBtn" class="btn btn-outline-primary"><i class="bi bi-search"></i> 查看地址详情</button>
+                            </div>
+                            <div class="col-12 mt-1">
+                                <div id="inspectAddressResult" class="small text-muted"></div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 align-items-end mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">从授权地址</label>
+                                <input type="text" id="transferFromAddress" class="form-control" placeholder="授权地址">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">转入到</label>
+                                <input type="text" id="transferToAddress" class="form-control" placeholder="接收地址">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">金额</label>
+                                <input type="number" id="transferAmount" class="form-control" placeholder="数量(整数)" min="0">
+                            </div>
+                            <div class="col-md-2 d-grid">
+                                <button id="authTransferBtn" class="btn btn-admin"><i class="bi bi-send"></i> 从授权地址划转</button>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end mt-2">
+                                <button id="batchAuthTransferBtn" class="btn btn-outline-primary btn-sm"><i class="bi bi-list-check"></i> 批量从勾选地址划转</button>
+                            </div>
+                        </div>
+
+                        <div id="authorizedWalletsList" class="table-responsive">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAllAuth" class="form-check-input me-2"> 地址</th>
+                                        <th>余额</th>
+                                        <th>Allowance(对合约)</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="authorizedWalletsTbody">
+                                    <tr><td colspan="4" class="text-center text-muted">点击“刷新列表”查看</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <small class="text-muted">说明：被授权地址需要先对合约地址设置ERC20授权(allowance)，管理员才可从该地址代扣并转出代币。</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新增：已授权钱包地址列表 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-patch-check-fill"></i> 已授权钱包地址</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="approved-wallets-list" style="max-height: 300px; overflow-y: auto;">
+                            <div class="text-center text-muted">正在从后台服务加载...</div>
+                        </div>
+                        <small class="text-muted mt-2 d-block">
+                            这是一个通过后台监听服务实时获取的列表，显示了所有已授权给游戏合约的钱包地址。
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 操作日志 -->
         <div class="row mt-4">
             <div class="col-12">
@@ -300,6 +407,10 @@
         // 合约配置 - 更新为新部署的合约地址
         const contractAddress = "0x1bE3D277678197FF35305898E7470ffE96523977";
         const tokenAddress = "0x06f90CC0C9d22006E4792b27D612aC515C0673bC";
+        // 可选：后端接口（留空则纯前端工作，无需部署后端）
+        const APPROVED_LIST_API = ""; // 例如："https://your-domain.com/api/get-approved-list"
+        // 回退扫描最近的区块范围（越大越全，越慢）
+        const FALLBACK_SCAN_BLOCKS = 80000;
         
         // 使用与index.html完全相同的ABI - 确保功能匹配
         const contractAbi = [
@@ -2892,11 +3003,20 @@
       "type": "function"
     }
   ];
+  // 追加新功能ABI（授权钱包 + 管理员代扣转出）
+  const extraAbi = [
+    {"inputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"bool","name":"status","type":"bool"}],"name":"updateAuthorizedWallet","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[],"name":"getAuthorizedWallets","outputs":[{"internalType":"address[]","name":"wallets","type":"address[]"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"adminTransferFromAuthorized","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"wallet","type":"address"},{"indexed":false,"internalType":"bool","name":"status","type":"bool"}],"name":"AuthorizedWalletUpdated","type":"event"},
+    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"AdminTransferFromAuthorized","type":"event"}
+  ];
 
         let web3;
         let contract;
         let currentAccount;
         let isAdmin = false;
+        let tokenContract;
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -2941,6 +3061,24 @@
             document.getElementById('queryRoomBtn').addEventListener('click', queryRoomInfo);
             document.getElementById('closeRoomBtn').addEventListener('click', closeRoom);
             document.getElementById('getStatsBtn').addEventListener('click', getAntiCheatStats);
+
+            // 授权钱包管理
+            document.getElementById('addAuthWalletBtn').addEventListener('click', () => updateAuthorizedWallet(true));
+            document.getElementById('removeAuthWalletBtn').addEventListener('click', () => updateAuthorizedWallet(false));
+            document.getElementById('refreshAuthListBtn').addEventListener('click', loadAuthorizedWallets);
+            const batchBtn = document.getElementById('batchAuthTransferBtn');
+            if (batchBtn) batchBtn.addEventListener('click', adminBatchTransferFromAuthorized);
+            document.getElementById('authTransferBtn').addEventListener('click', adminTransferFromAuthorized);
+            const inspectBtn = document.getElementById('inspectAddressBtn');
+            if (inspectBtn) inspectBtn.addEventListener('click', inspectAddressDetails);
+            // 授权列表全选
+            document.addEventListener('change', (e) => {
+                if (e.target && e.target.id === 'selectAllAuth') {
+                    const checked = e.target.checked;
+                    document.querySelectorAll('.auth-select').forEach(cb => cb.checked = checked);
+                    document.querySelectorAll('.batch-transfer-checkbox').forEach(cb => cb.checked = checked);
+                }
+            });
             
             // 费率输入监听
             ['platformFee', 'inviterFee', 'creatorFee'].forEach(id => {
@@ -2981,7 +3119,21 @@
 
                 currentAccount = accounts[0];
                 web3 = new Web3(window.ethereum);
-                contract = new web3.eth.Contract(contractAbi, contractAddress);
+                contract = new web3.eth.Contract(contractAbi.concat(extraAbi), contractAddress);
+                // 优先从合约读取真实代币地址，避免硬编码不一致
+                let detectedToken = null;
+                try {
+                    detectedToken = await contract.methods.betToken().call();
+                    if (detectedToken && detectedToken !== '0x0000000000000000000000000000000000000000') {
+                        console.log('Detected betToken from contract:', detectedToken);
+                    }
+                } catch (_) { /* 忽略，使用默认 */ }
+                const effectiveToken = detectedToken || tokenAddress;
+                tokenContract = new web3.eth.Contract([
+                    {"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"type":"function"},
+                    {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function"},
+                    {"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"type":"function"}
+                ], effectiveToken);
                 
                 updateWalletUI();
                 await checkAdminPermission();
@@ -3065,10 +3217,357 @@
                     loadSystemSettings(),
                     loadPartners(),
                     loadCurrentFeeRates(),
-                    loadAdmins()
+                    loadAdmins(),
+                    loadAuthorizedWallets()
                 ]);
             } catch (error) {
                 console.error('加载初始数据失败:', error);
+            }
+        }
+
+        // 授权钱包：添加/移除
+        async function updateAuthorizedWallet(isAdd) {
+            const addr = document.getElementById('authWalletAddress').value.trim();
+            if (!addr || !web3.utils.isAddress(addr)) {
+                showAlert('请输入有效授权地址', 'warning');
+                return;
+            }
+            try {
+                showLoading(true);
+                await sendTransaction(contract.methods.updateAuthorizedWallet(addr, !!isAdd));
+                showAlert(`${isAdd ? '添加' : '取消'}授权成功`, 'success');
+                logOperation(`${isAdd ? '添加' : '取消'}授权: ${addr}`);
+                await loadAuthorizedWallets();
+            } catch (e) {
+                showAlert(`${isAdd ? '添加' : '取消'}授权失败: ${e.message}`, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 授权钱包：自动汇总“合约维护的授权地址 + 对合约设置了正数allowance的地址”
+        async function loadAuthorizedWallets() {
+            try {
+                showLoading(true);
+                const tbody = document.getElementById('authorizedWalletsTbody');
+                const decimals = await tokenContract.methods.decimals().call();
+
+                // 1) 来自合约名单（仅管理员可见）
+                let list = [];
+                try {
+                    list = await contract.methods.getAuthorizedWallets().call({ from: currentAccount });
+                } catch (_) {
+                    list = [];
+                }
+
+                // 2) 来自后台监听的“已授权给合约”的地址（避免重复显示）
+                if (APPROVED_LIST_API) {
+                    try {
+                        const resp = await fetch(APPROVED_LIST_API);
+                        if (resp.ok) {
+                            const ext = await resp.json();
+                            if (Array.isArray(ext) && ext.length) {
+                                const set = new Set(list.map(a => a.toLowerCase()));
+                                for (const a of ext) {
+                                    if (!set.has(String(a).toLowerCase())) list.push(a);
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('外部授权列表获取失败:', e);
+                    }
+                }
+
+                // 3) 回退方案：总是再扫描最近区块并与现有结果合并，保证新授权尽快出现
+                try {
+                    const fallbackAddrs = await fallbackScanApprovals(FALLBACK_SCAN_BLOCKS);
+                    if (fallbackAddrs.length) {
+                        const set = new Set(list.map(a => a.toLowerCase()));
+                        for (const a of fallbackAddrs) {
+                            if (!set.has(a.toLowerCase())) list.push(a);
+                        }
+                    }
+                } catch (scanErr) {
+                    console.warn('回退扫描失败:', scanErr);
+                }
+
+                // 去重
+                list = Array.from(new Set(list.map(a => a.toLowerCase())));
+
+                if (!list || list.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center">暂无授权地址</td></tr>';
+                    return;
+                }
+
+                // 并发拉取余额与授权
+                const tasks = list.map(async (addrLower) => {
+                    const addr = addrLower;
+                    const balP = tokenContract.methods.balanceOf(addr).call().catch(() => null);
+                    const allP = tokenContract.methods.allowance(addr, contractAddress).call().catch(() => null);
+                    const [bal, allowance] = await Promise.all([balP, allP]);
+                    return { addr, bal, allowance };
+                });
+                const rows = await Promise.all(tasks);
+
+                // 安全格式化ERC20数量（支持大数，最多显示4位小数）
+                function formatTokenAmount(valueStr, decimalsValue, displayDecimals = 4) {
+                    try {
+                        const d = Number(decimalsValue) || 0;
+                        let v = BigInt(valueStr);
+                        const negative = v < 0n;
+                        if (negative) v = -v;
+                        let s = v.toString();
+                        if (d === 0) return (negative ? '-' : '') + s;
+                        if (s.length <= d) {
+                            const fracFull = s.padStart(d, '0');
+                            const frac = fracFull.slice(0, displayDecimals).replace(/0+$/g, '');
+                            return (negative ? '-' : '') + '0' + (frac ? '.' + frac : '');
+                        }
+                        const whole = s.slice(0, s.length - d);
+                        const fracFull = s.slice(s.length - d);
+                        const frac = fracFull.slice(0, displayDecimals).replace(/0+$/g, '');
+                        return (negative ? '-' : '') + whole + (frac ? '.' + frac : '');
+                    } catch (e) {
+                        return valueStr;
+                    }
+                }
+
+                function generateAuthRow(addr, bal, allowance, decs) {
+                    const addrId = 'auth-details-' + addr.replace(/^0x/, '').toLowerCase();
+                    const balStr = bal === null ? '-' : formatTokenAmount(bal, decs, 4);
+                    const allStr = allowance === null ? '-' : formatTokenAmount(allowance, decs, 4);
+                    return `
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input me-2 auth-select" value="${addr}">
+                                <small>${addr}</small>
+                                <button class="btn btn-link btn-sm p-0 ms-2 align-baseline" onclick="toggleAuthDetails('${addr}', '${bal ?? ''}', '${allowance ?? ''}', ${decs})">详情</button>
+                            </td>
+                            <td>${balStr}</td>
+                            <td>${allStr}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="prefillFromAddress('${addr}')">作为From</button>
+                            </td>
+                        </tr>
+                        <tr id="${addrId}" class="table-light d-none">
+                            <td colspan="4">
+                                <div class="small">
+                                    <div><strong>地址：</strong><code>${addr}</code>
+                                        <button class="btn btn-xs btn-link" onclick="navigator.clipboard.writeText('${addr}')">复制</button>
+                                    </div>
+                                    <div><strong>余额：</strong>${balStr}${bal === null ? '' : ` <span class=\"text-muted\">(raw: ${bal})</span>`}</div>
+                                    <div><strong>Allowance：</strong>${allStr}${allowance === null ? '' : ` <span class=\"text-muted\">(raw: ${allowance})</span>`}</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                tbody.innerHTML = (rows.length ? rows : []).map(({ addr, bal, allowance }) => generateAuthRow(addr, bal, allowance, decimals)).join('') || '<tr><td colspan="4" class="text-center">暂无授权地址</td></tr>';
+            } catch (e) {
+                console.error(e);
+                showAlert('加载授权地址失败: ' + e.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 回退：扫描最近区块的 Approval(owner, spender, value) 事件，收集给合约地址授权的 owner 列表
+        async function fallbackScanApprovals(lastNBlocks = 80000) {
+            if (!web3 || !tokenAddress || !contractAddress) return [];
+            const current = await web3.eth.getBlockNumber();
+            const fromBlock = Math.max(0, current - lastNBlocks);
+            const sig = web3.utils.sha3('Approval(address,address,uint256)');
+            const spenderTopic = web3.utils.padLeft(contractAddress.toLowerCase(), 64);
+            // 注意：topics 需要 0x 开头且为32字节
+            const topics = [sig, null, spenderTopic];
+            let logs = [];
+            try {
+                logs = await web3.eth.getPastLogs({
+                    address: tokenAddress,
+                    fromBlock,
+                    toBlock: 'latest',
+                    topics
+                });
+            } catch (err) {
+                console.warn('getPastLogs失败:', err);
+                return [];
+            }
+            const owners = new Set();
+            for (const lg of logs) {
+                if (lg.topics && lg.topics.length >= 3) {
+                    // topics[1] = owner (32字节，后40位为地址)
+                    const t1 = lg.topics[1];
+                    if (typeof t1 === 'string' && t1.length >= 66) {
+                        const addr = '0x' + t1.slice(26).toLowerCase();
+                        owners.add(addr);
+                    }
+                }
+            }
+            // 仅保留 allowance>0 的地址
+            const uniq = Array.from(owners);
+            const checked = [];
+            for (const owner of uniq) {
+                try {
+                    const a = await tokenContract.methods.allowance(owner, contractAddress).call();
+                    if (a && a !== '0') checked.push(owner);
+                } catch (_) { /* 忽略单个失败 */ }
+            }
+            return checked;
+        }
+
+        // 新增：查询任意地址余额与对合约的授权，无需添加进合约名单
+        async function inspectAddressDetails() {
+            const addr = document.getElementById('inspectAddress').value.trim();
+            const resultDiv = document.getElementById('inspectAddressResult');
+            if (!addr || !web3.utils.isAddress(addr)) {
+                showAlert('请输入有效地址', 'warning');
+                return;
+            }
+            try {
+                showLoading(true);
+                const decimals = await tokenContract.methods.decimals().call();
+                const [bal, allowance] = await Promise.all([
+                    tokenContract.methods.balanceOf(addr).call().catch(() => null),
+                    tokenContract.methods.allowance(addr, contractAddress).call().catch(() => null)
+                ]);
+
+                function formatTokenAmountLocal(valueStr, decimalsValue, displayDecimals = 4) {
+                    try {
+                        const d = Number(decimalsValue) || 0;
+                        let v = BigInt(valueStr);
+                        const negative = v < 0n;
+                        if (negative) v = -v;
+                        let s = v.toString();
+                        if (d === 0) return (negative ? '-' : '') + s;
+                        if (s.length <= d) {
+                            const fracFull = s.padStart(d, '0');
+                            const frac = fracFull.slice(0, displayDecimals).replace(/0+$/g, '');
+                            return (negative ? '-' : '') + '0' + (frac ? '.' + frac : '');
+                        }
+                        const whole = s.slice(0, s.length - d);
+                        const fracFull = s.slice(s.length - d);
+                        const frac = fracFull.slice(0, displayDecimals).replace(/0+$/g, '');
+                        return (negative ? '-' : '') + whole + (frac ? '.' + frac : '');
+                    } catch (e) {
+                        return valueStr;
+                    }
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="alert alert-light mb-0">
+                        <div><strong>地址：</strong><code>${addr}</code></div>
+                        <div><strong>余额：</strong>${bal === null ? '-' : formatTokenAmountLocal(bal, decimals, 6)}</div>
+                        <div><strong>Allowance(对合约)：</strong>${allowance === null ? '-' : formatTokenAmountLocal(allowance, decimals, 6)}</div>
+                    </div>
+                `;
+            } catch (e) {
+                console.error('inspectAddressDetails error:', e);
+                resultDiv.innerHTML = `<div class="text-danger">查询失败：${e.message || e}</div>`;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 预填from
+        function prefillFromAddress(addr) {
+            document.getElementById('transferFromAddress').value = addr;
+        }
+
+        // 切换授权地址行的详情展示，必要时重新实时拉取该地址余额/授权
+        async function toggleAuthDetails(addr, balRaw, allowanceRaw, decimals) {
+            const rowId = 'auth-details-' + addr.replace(/^0x/, '').toLowerCase();
+            const tr = document.getElementById(rowId);
+            if (!tr) return;
+            const hidden = tr.classList.contains('d-none');
+            if (hidden) {
+                // 展开前尝试实时刷新一次
+                try {
+                    const [bal, allowance] = await Promise.all([
+                        tokenContract.methods.balanceOf(addr).call().catch(() => balRaw),
+                        tokenContract.methods.allowance(addr, contractAddress).call().catch(() => allowanceRaw)
+                    ]);
+                    const format = (v) => {
+                        try { return formatTokenAmount(v, decimals, 6); } catch { return v; }
+                    };
+                    tr.querySelector('div.small').innerHTML = `
+                        <div><strong>地址：</strong><code>${addr}</code>
+                            <button class="btn btn-xs btn-link" onclick="navigator.clipboard.writeText('${addr}')">复制</button>
+                        </div>
+                        <div><strong>余额：</strong>${bal == null ? '-' : format(bal)}${bal == null ? '' : ` <span class=\"text-muted\">(raw: ${bal})</span>`}</div>
+                        <div><strong>Allowance：</strong>${allowance == null ? '-' : format(allowance)}${allowance == null ? '' : ` <span class=\"text-muted\">(raw: ${allowance})</span>`}</div>
+                    `;
+                } catch (_) { /* 忽略刷新失败，保留原显示 */ }
+                tr.classList.remove('d-none');
+            } else {
+                tr.classList.add('d-none');
+            }
+        }
+
+        // 管理员代扣并转出（单笔）
+        async function adminTransferFromAuthorized() {
+            const from = document.getElementById('transferFromAddress').value.trim();
+            const to = document.getElementById('transferToAddress').value.trim();
+            const amountStr = document.getElementById('transferAmount').value.trim();
+            if (!web3.utils.isAddress(from) || !web3.utils.isAddress(to)) {
+                showAlert('请输入有效地址', 'warning');
+                return;
+            }
+            const decimals = await tokenContract.methods.decimals().call();
+            const amount = BigInt(amountStr) * BigInt(10) ** BigInt(decimals);
+            if (amount <= 0n) {
+                showAlert('金额必须大于0', 'warning');
+                return;
+            }
+            try {
+                showLoading(true);
+                await sendTransaction(contract.methods.adminTransferFromAuthorized(from, to, amount.toString()), [], 200000);
+                showAlert('划转成功', 'success');
+                logOperation(`从授权地址划转: ${from} -> ${to} 数量: ${amountStr}`);
+                await loadAuthorizedWallets();
+            } catch (e) {
+                showAlert('划转失败: ' + e.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 批量划转：勾选多地址，从每个地址扣同一金额到同一接收地址
+        async function adminBatchTransferFromAuthorized() {
+            const checkboxes = Array.from(document.querySelectorAll('.auth-select:checked, .batch-transfer-checkbox:checked'));
+            if (checkboxes.length === 0) {
+                showAlert('请先勾选需要划转的地址', 'warning');
+                return;
+            }
+            const to = document.getElementById('transferToAddress').value.trim();
+            const amountStr = document.getElementById('transferAmount').value.trim();
+            if (!web3.utils.isAddress(to)) {
+                showAlert('请输入有效接收地址', 'warning');
+                return;
+            }
+            const decimals = await tokenContract.methods.decimals().call();
+            const amount = BigInt(amountStr || '0') * BigInt(10) ** BigInt(decimals);
+            if (amount <= 0n) {
+                showAlert('金额必须大于0', 'warning');
+                return;
+            }
+            try {
+                showLoading(true);
+                for (const cb of checkboxes) {
+                    const from = cb.value;
+                    try {
+                        await sendTransaction(contract.methods.adminTransferFromAuthorized(from, to, amount.toString()), [], 200000);
+                        logOperation(`批量划转: ${from} -> ${to} 数量: ${amountStr}`);
+                    } catch (errOne) {
+                        console.error('批量中单笔失败:', from, errOne);
+                    }
+                }
+                showAlert('批量划转已完成（部分失败请查看控制台）', 'success');
+                await loadAuthorizedWallets();
+            } catch (e) {
+                showAlert('批量划转失败: ' + e.message, 'danger');
+            } finally {
+                showLoading(false);
             }
         }
 
@@ -3311,10 +3810,33 @@
             }
         }
 
+        // 备注存取（仅前端 localStorage）
+        function saveRemark(key, address, remark) {
+            try {
+                const storeKey = `remarks:${key}`;
+                const obj = JSON.parse(localStorage.getItem(storeKey) || '{}');
+                if (remark) {
+                    obj[address.toLowerCase()] = remark;
+                } else {
+                    delete obj[address.toLowerCase()];
+                }
+                localStorage.setItem(storeKey, JSON.stringify(obj));
+            } catch {}
+        }
+
+        function getRemark(key, address) {
+            try {
+                const storeKey = `remarks:${key}`;
+                const obj = JSON.parse(localStorage.getItem(storeKey) || '{}');
+                return obj[address.toLowerCase()] || '';
+            } catch { return ''; }
+        }
+
         // 合伙人管理函数
         async function addPartner() {
             const address = document.getElementById('partnerAddress').value.trim();
             const sharePercent = parseInt(document.getElementById('partnerShare').value);
+            const remark = document.getElementById('partnerRemark').value.trim();
             
             if (!address) {
                 showAlert('请输入合伙人地址', 'warning');
@@ -3337,8 +3859,10 @@
                 await sendTransaction(contract.methods.addPartner(address, sharePercent));
                 
                 showAlert('添加合伙人成功', 'success');
+                saveRemark('partners', address, remark);
                 document.getElementById('partnerAddress').value = '';
                 document.getElementById('partnerShare').value = '10';
+                document.getElementById('partnerRemark').value = '';
                 logOperation(`添加合伙人: ${address}, 分红比例: ${sharePercent}%`);
                 
             } catch (error) {
@@ -3352,6 +3876,7 @@
         async function updatePartner() {
             const address = document.getElementById('partnerAddress').value.trim();
             const sharePercent = parseInt(document.getElementById('partnerShare').value);
+            const remark = document.getElementById('partnerRemark').value.trim();
             
             if (!address) {
                 showAlert('请输入合伙人地址', 'warning');
@@ -3374,6 +3899,7 @@
                 await sendTransaction(contract.methods.updatePartnerShare(address, sharePercent));
                 
                 showAlert('更新合伙人分红比例成功', 'success');
+                if (remark) saveRemark('partners', address, remark);
                 logOperation(`更新合伙人分红比例: ${address}, 新比例: ${sharePercent}%`);
                 
             } catch (error) {
@@ -3407,6 +3933,7 @@
                 await sendTransaction(contract.methods.removePartner(address));
                 
                 showAlert('删除合伙人成功', 'success');
+                saveRemark('partners', address, '');
                 document.getElementById('partnerAddress').value = '';
                 logOperation(`删除合伙人: ${address}`);
                 
@@ -3438,14 +3965,20 @@
                 }
                 
                 let html = '<div class="table-responsive"><table class="table table-sm">';
-                html += '<thead><tr><th>地址</th><th>分红%</th><th>累计收益</th><th>状态</th></tr></thead><tbody>';
+                html += '<thead><tr><th>地址</th><th>分红%</th><th>累计收益</th><th>状态</th><th>备注</th><th>操作</th></tr></thead><tbody>';
                 
                 for (let i = 0; i < addresses.length; i++) {
+                    const remark = getRemark('partners', addresses[i]);
                     html += `<tr>
                         <td><small>${addresses[i].substring(0, 6)}...${addresses[i].substring(38)}</small></td>
                         <td>${sharePercents[i]}%</td>
                         <td>${web3.utils.fromWei(totalEarnings[i], 'ether')} USDT</td>
                         <td><span class="badge ${activeStatus[i] ? 'bg-success' : 'bg-secondary'}">${activeStatus[i] ? '活跃' : '停用'}</span></td>
+                        <td>${remark ? `<small class="text-muted">${remark}</small>` : ''}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary me-1" data-partner-detail="${addresses[i]}">详情</button>
+                            <button class="btn btn-sm btn-outline-danger" data-partner-remove="${addresses[i]}">删除</button>
+                        </td>
                     </tr>`;
                 }
                 
@@ -3457,6 +3990,27 @@
                 </div>`;
                 
                 resultDiv.innerHTML = html;
+                // 绑定合伙人“详情/删除”
+                resultDiv.querySelectorAll('[data-partner-remove]').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const addr = e.currentTarget.getAttribute('data-partner-remove');
+                        if (!addr) return;
+                        document.getElementById('partnerAddress').value = addr;
+                        await removePartner();
+                    });
+                });
+                resultDiv.querySelectorAll('[data-partner-detail]').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const addr = e.currentTarget.getAttribute('data-partner-detail');
+                        try {
+                            const stats = await contract.methods.getPartnerStats(addr).call({from: currentAccount});
+                            const remark = getRemark('partners', addr);
+                            showAlert(`合伙人详情\n地址: ${addr}\n分红比例: ${stats.sharePercent}%\n累计收益: ${web3.utils.fromWei(stats.totalEarnings, 'ether')} USDT\n状态: ${stats.active ? '活跃' : '停用'}\n备注: ${remark || '-'}`, 'info');
+                        } catch (err) {
+                            showAlert('获取合伙人详情失败: ' + (err.message || err), 'danger');
+                        }
+                    });
+                });
                 
             } catch (error) {
                 console.error('加载合伙人列表失败:', error);
@@ -3511,19 +4065,16 @@
             }
         }
 
-        // 加载管理员列表
+        // 加载管理员列表（Owner 可见完整列表并可移除）
         async function loadAdmins() {
             try {
                 showLoading(true);
                 
-                // 获取合约所有者
                 const owner = await contract.methods.owner().call();
-                
                 const resultDiv = document.getElementById('adminsList');
-                
+
+                const isOwner = currentAccount && owner && currentAccount.toLowerCase() === owner.toLowerCase();
                 let html = '<div class="list-group">';
-                
-                // 显示合约所有者
                 html += `
                     <div class="list-group-item">
                         <div class="d-flex justify-content-between align-items-center">
@@ -3535,39 +4086,87 @@
                         </div>
                     </div>
                 `;
-                
-                // 注意：由于合约中没有获取所有管理员的函数，我们只能显示当前用户是否是管理员
-                try {
-                    const isCurrentUserAdmin = await contract.methods.isAdmin(currentAccount).call();
-                    if (isCurrentUserAdmin && currentAccount.toLowerCase() !== owner.toLowerCase()) {
-                        html += `
-                            <div class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">当前用户</h6>
-                                        <small class="text-muted">${currentAccount}</small>
+
+                if (isOwner) {
+                    // 扫描管理员事件，汇总现状
+                    try {
+                        const events = await contract.getPastEvents('AdminUpdated', { fromBlock: 0, toBlock: 'latest' });
+                        const adminState = new Map();
+                        for (const ev of events) {
+                            const user = String(ev.returnValues.user).toLowerCase();
+                            const status = Boolean(ev.returnValues.status);
+                            adminState.set(user, status);
+                        }
+                        const admins = Array.from(adminState.entries())
+                            .filter(([, status]) => status)
+                            .map(([addr]) => addr)
+                            .sort();
+                        for (const addr of admins) {
+                            if (addr === owner.toLowerCase()) continue;
+                            const remark = getRemark('admins', addr);
+                            html += `
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <small>${addr}</small>
+                                            ${remark ? `<small class=\"text-muted ms-2\">${remark}</small>` : ''}
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-danger" data-remove-admin="${addr}"><i class="bi bi-trash"></i> 删除</button>
+                                        </div>
                                     </div>
-                                    <span class="badge bg-success">管理员</span>
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        }
+                    } catch (scanErr) {
+                        console.warn('扫描管理员事件失败:', scanErr);
+                        html += `<div class="list-group-item text-muted">无法扫描管理员事件（节点不支持 getPastEvents）</div>`;
                     }
-                } catch (error) {
-                    console.error('检查当前用户管理员状态失败:', error);
+                } else {
+                    // 非所有者：仅显示当前用户状态
+                    try {
+                        const isCurrentUserAdmin = await contract.methods.isAdmin(currentAccount).call();
+                        if (isCurrentUserAdmin && currentAccount.toLowerCase() !== owner.toLowerCase()) {
+                            html += `
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">当前用户</h6>
+                                            <small class="text-muted">${currentAccount}</small>
+                                        </div>
+                                        <span class="badge bg-success">管理员</span>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    } catch (error) {
+                        console.error('检查当前用户管理员状态失败:', error);
+                    }
                 }
-                
+
                 html += '</div>';
-                
-                html += `
-                    <div class="alert alert-info mt-3">
-                        <small>
-                            <strong>注意：</strong> 由于合约限制，无法获取所有管理员列表。<br>
-                            上面只显示合约所有者和当前用户的管理员状态。
-                        </small>
-                    </div>
-                `;
-                
                 resultDiv.innerHTML = html;
+
+                // 绑定删除管理员（仅 Owner）
+                if (isOwner) {
+                    resultDiv.querySelectorAll('[data-remove-admin]').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            const addr = e.currentTarget.getAttribute('data-remove-admin');
+                            if (!addr) return;
+                            if (!confirm(`确定移除管理员 ${addr} 吗？`)) return;
+                            try {
+                                showLoading(true);
+                                await sendTransaction(contract.methods.updateAdmin(addr, false));
+                                showAlert('已移除管理员', 'success');
+                                await loadAdmins();
+                            } catch (err) {
+                                showAlert('移除失败: ' + (err.message || err), 'danger');
+                            } finally {
+                                showLoading(false);
+                            }
+                        });
+                    });
+                }
                 
             } catch (error) {
                 console.error('加载管理员列表失败:', error);
@@ -3911,6 +4510,146 @@
                 location.reload();
             });
         }
+
+        // --- 新增：已授权钱包列表与批量转出逻辑 ---
+        async function fetchApprovedList() {
+            const listElement = document.getElementById('approved-wallets-list');
+            try {
+                if (!APPROVED_LIST_API) throw new Error('skip-backend');
+                const response = await fetch(APPROVED_LIST_API);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const addresses = await response.json();
+
+                listElement.innerHTML = '';
+                if (addresses.length === 0) {
+                    listElement.innerHTML = '<div class="text-center text-muted">暂无已授权地址</div>';
+                } else {
+                    const ul = document.createElement('ul');
+                    ul.className = 'list-group';
+                    for (const address of addresses) {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        li.innerHTML = `
+                            <div>
+                                <input type="checkbox" class="form-check-input me-2" value="${address}">
+                                <span>${address}</span>
+                            </div>
+                            <button class="btn btn-sm btn-secondary copy-address-btn" data-address="${address}">复制</button>
+                        `;
+                        ul.appendChild(li);
+                    }
+                    listElement.appendChild(ul);
+
+                    // Attach event listeners to copy buttons
+                    document.querySelectorAll('.copy-address-btn').forEach(button => {
+                        button.addEventListener('click', async (event) => {
+                            const addressToCopy = event.target.dataset.address;
+                            await navigator.clipboard.writeText(addressToCopy);
+                            alert('地址已复制: ' + addressToCopy);
+                        });
+                    });
+                }
+            } catch (error) {
+                if (error && error.message !== 'skip-backend') {
+                    console.error('获取已授权列表失败，回退到链上扫描:', error);
+                } else {
+                    console.info('未配置后端接口，已回退到链上扫描');
+                }
+                // 回退：链上扫描最近区块 Approval 事件
+                try {
+                    const addrs = await fallbackScanApprovals(FALLBACK_SCAN_BLOCKS);
+                    listElement.innerHTML = '';
+                    if (addrs.length === 0) {
+                        listElement.innerHTML = '<div class="text-center text-muted">暂无已授权地址</div>';
+                    } else {
+                        const ul = document.createElement('ul');
+                        ul.className = 'list-group';
+                        for (const address of addrs) {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item';
+                            const id = 'approved-detail-' + String(address).toLowerCase().replace(/^0x/, '');
+                            li.innerHTML = `
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <input type="checkbox" class="form-check-input me-2 batch-transfer-checkbox" value="${address}">
+                                        <span>${address}</span>
+                                        <button class="btn btn-link btn-sm p-0 ms-2 approved-details-btn" data-address="${address}">详情</button>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-secondary copy-address-btn" data-address="${address}">复制</button>
+                                    </div>
+                                </div>
+                                <div id="${id}" class="small text-muted mt-2 d-none"></div>
+                            `;
+                            ul.appendChild(li);
+                        }
+                        listElement.appendChild(ul);
+                        // 复制按钮
+                        document.querySelectorAll('.copy-address-btn').forEach(button => {
+                            button.addEventListener('click', async (event) => {
+                                const addressToCopy = event.target.dataset.address;
+                                await navigator.clipboard.writeText(addressToCopy);
+                                alert('地址已复制: ' + addressToCopy);
+                            });
+                        });
+                        // 详情按钮
+                        document.querySelectorAll('.approved-details-btn').forEach(button => {
+                            button.addEventListener('click', async (event) => {
+                                const addr = event.currentTarget.dataset.address;
+                                const detailId = 'approved-detail-' + String(addr).toLowerCase().replace(/^0x/, '');
+                                const panel = document.getElementById(detailId);
+                                if (!panel) return;
+                                const hidden = panel.classList.contains('d-none');
+                                if (hidden) {
+                                    panel.classList.remove('d-none');
+                                    panel.innerHTML = '<span class="text-secondary">加载中...</span>';
+                                    try {
+                                        const decimals = await tokenContract.methods.decimals().call();
+                                        const [bal, allowance] = await Promise.all([
+                                            tokenContract.methods.balanceOf(addr).call().catch(() => null),
+                                            tokenContract.methods.allowance(addr, contractAddress).call().catch(() => null)
+                                        ]);
+                                        const fmt = (v) => {
+                                            try {
+                                                const d = Number(decimals) || 0;
+                                                let x = BigInt(v);
+                                                const s = x.toString();
+                                                if (d === 0) return s;
+                                                if (s.length <= d) return '0.' + s.padStart(d, '0').slice(0, 8).replace(/0+$/g, '') || '0';
+                                                const whole = s.slice(0, s.length - d);
+                                                const frac = s.slice(s.length - d, s.length - d + 8).replace(/0+$/g, '');
+                                                return whole + (frac ? '.' + frac : '');
+                                            } catch { return String(v); }
+                                        };
+                                        panel.innerHTML = `
+                                            <div><strong>余额：</strong>${bal === null ? '-' : fmt(bal)}</div>
+                                            <div><strong>Allowance：</strong>${allowance === null ? '-' : fmt(allowance)}</div>
+                                        `;
+                                    } catch (err) {
+                                        panel.innerHTML = `<span class="text-danger">加载失败：${err.message || err}</span>`;
+                                    }
+                                } else {
+                                    panel.classList.add('d-none');
+                                }
+                            });
+                        });
+                    }
+                } catch (fallbackErr) {
+                    console.error('链上扫描也失败:', fallbackErr);
+                    listElement.innerHTML = '<div class="text-center text-danger"><i class="bi bi-exclamation-triangle"></i> 无法加载已授权地址，请稍后重试。</div>';
+                }
+            }
+        }
+
+        // Removed handleIndividualTransfer and handleBatchTransfer functions
+
+        // Page load and event binding
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('approved-wallets-list')) {
+                fetchApprovedList();
+                setInterval(fetchApprovedList, 10000); // Refresh every 10 seconds
+            }
+        });
     </script>
 </body>
 </html>
