@@ -169,9 +169,6 @@
       .goog-te-banner-frame.skiptranslate { display: none !important; }
       body { top: 0 !important; }
       #google_translate_element { display: none; height: 0; overflow: hidden; }
-      #lang-switcher { position: fixed; top: 12px; right: 12px; z-index: 2147483647; backdrop-filter: blur(6px); background: rgba(0,0,0,0.4); padding: 6px 8px; border-radius: 8px; }
-      #lang-switcher select { margin-left: 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.15); border-radius: 6px; padding: 4px 6px; font-size: 12px; }
-      #lang-switcher label { color: #fff; font-size: 12px; }
     `;
     document.head.appendChild(style);
 
@@ -182,28 +179,7 @@
       document.body.appendChild(gadget);
     }
 
-    let switcher = document.getElementById('lang-switcher');
-    if (!switcher) {
-      switcher = document.createElement('div');
-      switcher.id = 'lang-switcher';
-      const label = document.createElement('label');
-      label.htmlFor = 'langSelector';
-      label.textContent = '语言 Language';
-      const select = document.createElement('select');
-      select.id = 'langSelector';
-      for (const [code, name] of Object.entries(supportedLanguages)) {
-        const option = document.createElement('option');
-        option.value = code;
-        option.textContent = name;
-        select.appendChild(option);
-      }
-      select.addEventListener('change', function() {
-        setLanguage(this.value);
-      });
-      switcher.appendChild(label);
-      switcher.appendChild(select);
-      document.body.appendChild(switcher);
-    }
+    // 悬浮语言选择器不再创建，避免遮挡导航入口（请使用页面内的选择器）
   }
 
   function loadGoogleScriptOnce() {
