@@ -169,6 +169,16 @@
       .goog-te-banner-frame.skiptranslate { display: none !important; }
       body { top: 0 !important; }
       #google_translate_element { display: none; height: 0; overflow: hidden; }
+      /* Hide Google Translate rating/bubble/tooltips */
+      #goog-gt-tt { display: none !important; }
+      .goog-te-balloon-frame { display: none !important; }
+      .goog-tooltip { display: none !important; }
+      .goog-tooltip:hover { display: none !important; }
+      .goog-text-highlight { background: none !important; box-shadow: none !important; }
+      .goog-logo-link { display: none !important; }
+      .goog-te-gadget { height: 0 !important; overflow: hidden !important; }
+      .VIpgJd-ZVi9od-xl07Ob-OEVmcd { display: none !important; }
+      .VIpgJd-ZVi9od-l4eHX-hSRGPd { display: none !important; }
     `;
     document.head.appendChild(style);
 
@@ -213,7 +223,7 @@
   }
 
   function syncSelectors(lang) {
-    const ids = ['langSelector', 'langSelectorNav', 'langSelectorAdmin', 'langSelectorBadmin'];
+    const ids = ['langSelector', 'langSelectorNav', 'langSelectorNavMobile', 'langSelectorAdmin', 'langSelectorBadmin'];
     ids.forEach(id => {
       const s = document.getElementById(id);
       if (s) s.value = lang;
@@ -221,7 +231,7 @@
   }
 
   function bindSelectors() {
-    const ids = ['langSelector', 'langSelectorNav', 'langSelectorAdmin', 'langSelectorBadmin'];
+    const ids = ['langSelector', 'langSelectorNav', 'langSelectorNavMobile', 'langSelectorAdmin', 'langSelectorBadmin'];
     ids.forEach(id => {
       const s = document.getElementById(id);
       if (s && !s.__i18nBound) {
