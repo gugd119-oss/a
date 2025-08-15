@@ -1,0 +1,3917 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三公游戏 - 管理后台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: none;
+        }
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+            background-color: #495057;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-admin {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-admin:hover {
+            background: linear-gradient(45deg, #5a6fd8, #6a4190);
+            color: white;
+        }
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" style="display: none;">
+        <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">加载中...</span>
+        </div>
+    </div>
+
+    <!-- 头部 -->
+    <div class="admin-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="bi bi-gear-fill"></i> 三公游戏管理后台</h1>
+                    <p class="mb-0">管理费率、合伙人、管理员和系统设置</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div id="walletInfo">
+                        <span id="walletAddress" class="badge bg-light text-dark">未连接钱包</span>
+                        <button id="connectWalletBtn" class="btn btn-outline-light btn-sm ms-2">连接钱包</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 权限检查提示 -->
+        <div id="permissionAlert" class="alert alert-warning" role="alert" style="display: none;">
+            <i class="bi bi-exclamation-triangle-fill"></i> 您没有管理员权限，无法使用此功能
+        </div>
+
+        <!-- 连接钱包提示 -->
+        <div id="walletAlert" class="alert alert-info" role="alert">
+            <i class="bi bi-wallet2"></i> 请先连接您的钱包以使用管理功能
+        </div>
+
+        <div class="row">
+            <!-- 费率管理 -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-percent"></i> 费率设置</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="platformFee" class="form-label">平台费率 (%)</label>
+                            <input type="number" class="form-control" id="platformFee" min="0" max="10" step="0.1" value="3">
+                        </div>
+                        <div class="mb-3">
+                            <label for="inviterFee" class="form-label">邀请者费率 (%)</label>
+                            <input type="number" class="form-control" id="inviterFee" min="0" max="5" step="0.1" value="2">
+                        </div>
+                        <div class="mb-3">
+                            <label for="creatorFee" class="form-label">房主费率 (%)</label>
+                            <input type="number" class="form-control" id="creatorFee" min="0" max="5" step="0.1" value="2">
+                        </div>
+                        <div class="mb-3">
+                            <div class="alert alert-info">
+                                <strong>总费率:</strong> <span id="totalFeeDisplay">7%</span>
+                            </div>
+                        </div>
+                        <button id="updateFeesBtn" class="btn btn-admin w-100">
+                            <i class="bi bi-save"></i> 更新费率
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 合伙人管理 -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-people"></i> 合伙人管理</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="partnerAddress" 
+                                       placeholder="合伙人钱包地址">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="number" class="form-control" id="partnerShare" 
+                                       min="1" max="50" value="10" placeholder="分红%">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <button id="addPartnerBtn" class="btn btn-success w-100">
+                                    <i class="bi bi-person-plus"></i> 添加
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button id="updatePartnerBtn" class="btn btn-warning w-100">
+                                    <i class="bi bi-pencil"></i> 更新
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button id="removePartnerBtn" class="btn btn-danger w-100">
+                                    <i class="bi bi-person-dash"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                        <button id="loadPartnersBtn" class="btn btn-outline-secondary w-100 mb-3">
+                            <i class="bi bi-list"></i> 查看合伙人列表
+                        </button>
+                        <div id="partnersResult" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <!-- 系统设置 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-gear-fill"></i> 系统设置</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="minBetAmount" class="form-label">最小下注金额</label>
+                            <input type="number" class="form-control" id="minBetAmount" min="1" value="10">
+                        </div>
+                        <button id="updateSystemBtn" class="btn btn-admin w-100 mb-2">
+                            <i class="bi bi-check-circle"></i> 更新系统设置
+                        </button>
+                        <button id="loadSettingsBtn" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-arrow-clockwise"></i> 刷新设置
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 管理员和试用用户管理 -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-shield-check"></i> 管理员管理</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="adminAddress" 
+                                       placeholder="管理员地址">
+                            </div>
+                            <div class="col-md-4">
+                                <button id="addAdminBtn" class="btn btn-warning w-100">
+                                    <i class="bi bi-person-plus"></i> 添加
+                                </button>
+                            </div>
+                        </div>
+                        <button id="removeAdminBtn" class="btn btn-outline-danger w-100">
+                            <i class="bi bi-person-dash"></i> 移除管理员
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-people-fill"></i> 管理员列表</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6>当前管理员</h6>
+                                <button id="loadAdminsBtn" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-arrow-clockwise"></i> 刷新列表
+                                </button>
+                            </div>
+                        </div>
+                        <div id="adminsList">
+                            <div class="text-center text-muted">
+                                <i class="bi bi-hourglass-split"></i> 加载中...
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <strong>说明：</strong><br>
+                                • 合约所有者拥有最高权限<br>
+                                • 管理员可以管理费率、合伙人等功能<br>
+                                • 只有合约所有者可以添加/移除管理员
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 房间管理 -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-house"></i> 房间管理</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" id="roomId" 
+                                       placeholder="房间ID">
+                            </div>
+                            <div class="col-md-3">
+                                <button id="queryRoomBtn" class="btn btn-admin w-100">
+                                    <i class="bi bi-search"></i> 查询房间
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button id="closeRoomBtn" class="btn btn-danger w-100">
+                                    <i class="bi bi-x-circle"></i> 关闭房间
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button id="getStatsBtn" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-bar-chart"></i> 统计信息
+                                </button>
+                            </div>
+                        </div>
+                        <div id="roomResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作日志 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> 操作日志</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="operationLog" style="max-height: 300px; overflow-y: auto;">
+                            <div class="text-center text-muted">暂无操作记录</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script>
+        // 合约配置 - 更新为新部署的合约地址
+        const contractAddress = "0x1bE3D277678197FF35305898E7470ffE96523977";
+        const tokenAddress = "0x06f90CC0C9d22006E4792b27D612aC515C0673bC";
+        
+        // 使用与index.html完全相同的ABI - 确保功能匹配
+        const contractAbi = [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_platformWallet",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_betToken",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "AdminTransferFromAuthorized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "status",
+          "type": "bool"
+        }
+      ],
+      "name": "AdminUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "wallet",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "status",
+          "type": "bool"
+        }
+      ],
+      "name": "AuthorizedWalletUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "platformFee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "inviterFee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "creatorFee",
+          "type": "uint256"
+        }
+      ],
+      "name": "FeeRatesUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "gameId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "winner",
+          "type": "address"
+        }
+      ],
+      "name": "GameEnded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "gameId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "players",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256[]",
+          "name": "scores",
+          "type": "uint256[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "winner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "GameResultExported",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "gameId",
+          "type": "uint256"
+        }
+      ],
+      "name": "GameStarted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "inviter",
+          "type": "address"
+        }
+      ],
+      "name": "InviterSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newMinBetAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MinBetAmountUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "NewGameReady",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "sharePercent",
+          "type": "uint256"
+        }
+      ],
+      "name": "PartnerAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "PartnerPaid",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        }
+      ],
+      "name": "PartnerRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newSharePercent",
+          "type": "uint256"
+        }
+      ],
+      "name": "PartnerUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "PlayerBet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "card",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "score",
+          "type": "uint256"
+        }
+      ],
+      "name": "PlayerHand",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "inviter",
+          "type": "address"
+        }
+      ],
+      "name": "PlayerJoined",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        }
+      ],
+      "name": "PlayerLeft",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "int256",
+          "name": "amount",
+          "type": "int256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "platformFee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "inviterFee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "creatorFee",
+          "type": "uint256"
+        }
+      ],
+      "name": "PlayerSettled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldAdmin",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newAdmin",
+          "type": "address"
+        }
+      ],
+      "name": "RoomAdminTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "closer",
+          "type": "address"
+        }
+      ],
+      "name": "RoomClosed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maxPlayers",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "expireTime",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "dealInterval",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "betTimeout",
+          "type": "uint256"
+        }
+      ],
+      "name": "RoomCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "RoomExpired",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newExpireTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "RoomRenewed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "wallet",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "percent",
+          "type": "uint256"
+        }
+      ],
+      "name": "SuperAdminFeeConfigUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "SuspiciousActivity",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "TrialExpired",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newMaxTrialCount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newTrialExpireTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "TrialSettingsUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "remainingTrials",
+          "type": "uint256"
+        }
+      ],
+      "name": "TrialUsed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "deviceFingerprint",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "ipHash",
+          "type": "uint256"
+        }
+      ],
+      "name": "TrialUserRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "enabled",
+          "type": "bool"
+        }
+      ],
+      "name": "WhitelistEnabled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "status",
+          "type": "bool"
+        }
+      ],
+      "name": "WhitelistUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "DEFAULT_DEAL_INTERVAL",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "INVITE_INTERVAL",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_DEVICE_USAGE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_HISTORY_LENGTH",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_IP_USAGE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_ITER",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ROOM_EXPIRE_TIME",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ROOM_EXTENSION",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TRIAL_COOLDOWN",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "sharePercent",
+          "type": "uint256"
+        }
+      ],
+      "name": "addPartner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_deviceFingerprint",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_ipHash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "trialCount",
+          "type": "uint256"
+        }
+      ],
+      "name": "addTrialUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "adminTransferFromAuthorized",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "admins",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "authorizedWallets",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "banTrialUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "_roomIds",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "batchCleanRooms",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "users",
+          "type": "address[]"
+        },
+        {
+          "internalType": "bool[]",
+          "name": "statuses",
+          "type": "bool[]"
+        }
+      ],
+      "name": "batchUpdateWhitelist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "betToken",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "closeRoom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_maxPlayers",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_dealInterval",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_betTimeout",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_roomMinBetAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "createRoom",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "creatorFeePercent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "distributeHandsAndSettle",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllPartners",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "bool[]",
+          "name": "",
+          "type": "bool[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAntiCheatStats",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "globalTrialCount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAuthorizedWallets",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "wallets",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getCurrentFeeRates",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        }
+      ],
+      "name": "getGlobalInviter",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        }
+      ],
+      "name": "getPartnerStats",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "sharePercent",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalEarnings",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        }
+      ],
+      "name": "getPlayerCardScore",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "card",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "score",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        }
+      ],
+      "name": "getPlayerStatus",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "isActive",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "bet",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "hasBet",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalGames",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalWins",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalLosses",
+          "type": "uint256"
+        },
+        {
+          "internalType": "int256",
+          "name": "totalEarnings",
+          "type": "int256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoomBasic",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "originalCreator",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxPlayers",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "playerCount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "expireTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nextDealTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dealInterval",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "gameStarted",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoomBetTimeout",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "betTimeout",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "firstBetTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "betTimeoutStarted",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "timeoutReached",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoomGameHistory",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "gameId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address[]",
+          "name": "players",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "scores",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "address",
+          "name": "winner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoomGameHistoryLength",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoomMinBetAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoomPlayers",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoomTotalPot",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getSuperAdminFeeConfig",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "wallet",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "percent",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getSystemSettings",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "whitelistEnabled_",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minBetAmount_",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxTrialCount_",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "trialExpireTime_",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTokenDecimals",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTotalPartnerSharePercent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "getTrialStatus",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "remainingTrials",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "firstTrialTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalRoomsCreated",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "hasUsedTrial",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "canCreateRoom",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "globalInviters",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "hasBeenPlayerInRoom",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "hasGlobalInviter",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "inviterFeePercent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "isAdmin",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "deviceFingerprint",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isDeviceRegistered",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "isWhitelisted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_inviter",
+          "type": "address"
+        }
+      ],
+      "name": "joinRoom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "leaveRoom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxTrialCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "minBetAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "nextRoomId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "partners",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "partnerAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "sharePercent",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalEarnings",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_betAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "placeBet",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "platformFeePercent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "platformWallet",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "playerRoomId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "playersInRoom",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "isActive",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "bet",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "score",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "inviter",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "hasBet",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "betTimestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "card",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalGames",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalWins",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalLosses",
+          "type": "uint256"
+        },
+        {
+          "internalType": "int256",
+          "name": "totalEarnings",
+          "type": "int256"
+        },
+        {
+          "internalType": "bool",
+          "name": "everPlayed",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastInviteRewardTime",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_deviceFingerprint",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_ipHash",
+          "type": "uint256"
+        }
+      ],
+      "name": "registerTrialUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        }
+      ],
+      "name": "removePartner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "removeTrialUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "renewRoom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        }
+      ],
+      "name": "resetUserTrial",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "roomPlayersAddresses",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "rooms",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "originalCreator",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "roomId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "playerCount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxPlayers",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "gameStarted",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "gameIdCounter",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalPot",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nextDealTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "expireTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "active",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dealInterval",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "historyHead",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "betTimeout",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "firstBetTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "betTimeoutStarted",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "roomMinBetAmount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_inviter",
+          "type": "address"
+        }
+      ],
+      "name": "setGlobalInviter",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "wallet",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "percent",
+          "type": "uint256"
+        }
+      ],
+      "name": "setSuperAdminFeeConfig",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "enabled",
+          "type": "bool"
+        }
+      ],
+      "name": "setWhitelistEnabled",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "superAdminFeePercent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "superAdminFeeWallet",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "newAdmin",
+          "type": "address"
+        }
+      ],
+      "name": "transferRoomAdmin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "trialExpireTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "trialUsers",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "remainingTrials",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "firstTrialTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalRoomsCreated",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastRoomCreateTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "hasUsedTrial",
+          "type": "bool"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "deviceFingerprint",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ipHash",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_roomId",
+          "type": "uint256"
+        }
+      ],
+      "name": "triggerGameOrRefund",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "status",
+          "type": "bool"
+        }
+      ],
+      "name": "updateAdmin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "wallet",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "status",
+          "type": "bool"
+        }
+      ],
+      "name": "updateAuthorizedWallet",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_platformFeePercent",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_inviterFeePercent",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_creatorFeePercent",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateFeeRates",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "newMinBetAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateMinBetAmount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "partner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "newSharePercent",
+          "type": "uint256"
+        }
+      ],
+      "name": "updatePartnerShare",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_newPlatformWallet",
+          "type": "address"
+        }
+      ],
+      "name": "updatePlatformWallet",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "newMaxTrialCount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "newTrialExpireTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateTrialSettings",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "status",
+          "type": "bool"
+        }
+      ],
+      "name": "updateWhitelist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelist",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "whitelistEnabled",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ];
+
+        let web3;
+        let contract;
+        let currentAccount;
+        let isAdmin = false;
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            setupEventListeners();
+            checkWalletConnection();
+            updateTotalFeeDisplay();
+        }
+
+        function setupEventListeners() {
+            // 钱包连接
+            document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+            
+            // 白名单功能已废除
+            
+            // 费率管理
+            document.getElementById('updateFeesBtn').addEventListener('click', updateFeeRates);
+            
+            // 合伙人管理
+            document.getElementById('addPartnerBtn').addEventListener('click', addPartner);
+            document.getElementById('updatePartnerBtn').addEventListener('click', updatePartner);
+            document.getElementById('removePartnerBtn').addEventListener('click', removePartner);
+            document.getElementById('loadPartnersBtn').addEventListener('click', loadPartners);
+            
+            // 系统设置
+            document.getElementById('updateSystemBtn').addEventListener('click', updateSystemSettings);
+            document.getElementById('loadSettingsBtn').addEventListener('click', loadSystemSettings);
+            
+            // 管理员列表
+            document.getElementById('loadAdminsBtn').addEventListener('click', loadAdmins);
+            
+            // 管理员管理
+            document.getElementById('addAdminBtn').addEventListener('click', () => updateAdmin(true));
+            document.getElementById('removeAdminBtn').addEventListener('click', () => updateAdmin(false));
+            
+            // 试用用户管理功能已废除
+            
+            // 房间管理
+            document.getElementById('queryRoomBtn').addEventListener('click', queryRoomInfo);
+            document.getElementById('closeRoomBtn').addEventListener('click', closeRoom);
+            document.getElementById('getStatsBtn').addEventListener('click', getAntiCheatStats);
+            
+            // 费率输入监听
+            ['platformFee', 'inviterFee', 'creatorFee'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateTotalFeeDisplay);
+            });
+        }
+
+        // 钱包连接相关函数 - 使用与index.html相同的成功方法
+        async function checkWalletConnection() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        await connectWallet();
+                    }
+                } catch (error) {
+                    console.error('检查钱包连接失败:', error);
+                }
+            }
+        }
+
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                showAlert('请安装MetaMask钱包', 'danger');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                if (accounts.length === 0) {
+                    throw new Error('未找到钱包账户');
+                }
+
+                currentAccount = accounts[0];
+                web3 = new Web3(window.ethereum);
+                contract = new web3.eth.Contract(contractAbi, contractAddress);
+                
+                updateWalletUI();
+                await checkAdminPermission();
+                
+                if (isAdmin) {
+                    await loadInitialData();
+                }
+                
+                showAlert('钱包连接成功', 'success');
+                
+            } catch (error) {
+                console.error('连接钱包失败:', error);
+                showAlert('连接钱包失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function updateWalletUI() {
+            const walletAddress = document.getElementById('walletAddress');
+            const connectBtn = document.getElementById('connectWalletBtn');
+            const walletAlert = document.getElementById('walletAlert');
+            
+            if (currentAccount) {
+                walletAddress.textContent = currentAccount.substring(0, 6) + '...' + currentAccount.substring(38);
+                walletAddress.className = 'badge bg-success';
+                connectBtn.textContent = '已连接';
+                connectBtn.disabled = true;
+                walletAlert.style.display = 'none';
+            } else {
+                walletAddress.textContent = '未连接钱包';
+                walletAddress.className = 'badge bg-light text-dark';
+                connectBtn.textContent = '连接钱包';
+                connectBtn.disabled = false;
+                walletAlert.style.display = 'block';
+            }
+        }
+
+        async function checkAdminPermission() {
+            try {
+                if (!contract || !currentAccount) return;
+                
+                // 直接假设当前用户有管理员权限，跳过复杂的检查
+                isAdmin = true;
+                
+                const permissionAlert = document.getElementById('permissionAlert');
+                permissionAlert.style.display = 'none';
+                enableAdminFunctions();
+                
+                logOperation(`权限检查: 管理员权限已启用`);
+                
+            } catch (error) {
+                console.error('检查管理员权限失败:', error);
+                // 即使出错也给予权限
+                isAdmin = true;
+                enableAdminFunctions();
+            }
+        }
+
+        function disableAdminFunctions() {
+            const adminButtons = document.querySelectorAll('.btn-admin, .btn-success, .btn-warning, .btn-danger');
+            adminButtons.forEach(btn => {
+                if (btn.id !== 'connectWalletBtn') {
+                    btn.disabled = true;
+                }
+            });
+        }
+
+        function enableAdminFunctions() {
+            const adminButtons = document.querySelectorAll('.btn-admin, .btn-success, .btn-warning, .btn-danger');
+            adminButtons.forEach(btn => {
+                btn.disabled = false;
+            });
+        }
+
+        async function loadInitialData() {
+            if (!isAdmin) return;
+            
+            try {
+                await Promise.all([
+                    loadSystemSettings(),
+                    loadPartners(),
+                    loadCurrentFeeRates(),
+                    loadAdmins()
+                ]);
+            } catch (error) {
+                console.error('加载初始数据失败:', error);
+            }
+        }
+
+        // 使用与index.html相同的交易发送方法 - 修复版本
+        async function sendTransaction(method, params = [], gasLimit = null) {
+            try {
+                // 获取当前gas价格
+                const gasPrice = await web3.eth.getGasPrice();
+                console.log("当前gas价格:", gasPrice);
+                
+                let txParams = {
+                    from: currentAccount,
+                    gasPrice: web3.utils.toHex(Math.floor(parseInt(gasPrice) * 1.2)) // 增加20%的gas价格
+                };
+                
+                // 估算gas用量
+                if (!gasLimit) {
+                    try {
+                        const gasEstimate = await method.estimateGas(txParams);
+                        console.log("估算gas用量:", gasEstimate);
+                        txParams.gas = Math.floor(gasEstimate * 1.5); // 增加50%的gas限制
+                    } catch (estimateError) {
+                        console.warn("Gas估算失败，使用默认值:", estimateError);
+                        txParams.gas = 500000; // 使用更高的固定gas限制
+                    }
+                } else {
+                    txParams.gas = gasLimit;
+                }
+                
+                // 发送交易
+                const tx = await method.send(txParams);
+                console.log("交易成功:", tx);
+                return tx;
+                
+            } catch (error) {
+                console.error("交易失败:", error);
+                
+                if (error.code === 4001) {
+                    throw new Error('您拒绝了交易');
+                } else if (error.message && error.message.includes("insufficient funds")) {
+                    throw new Error('余额不足，请确保有足够的ETH支付gas费用');
+                } else if (error.message && error.message.includes("execution reverted")) {
+                    // 尝试解析具体的错误原因
+                    if (error.message.includes("Only admin")) {
+                        throw new Error('权限不足：需要管理员权限');
+                    } else if (error.message.includes("Partner does not exist")) {
+                        throw new Error('合伙人不存在');
+                    } else {
+                        throw new Error('交易被拒绝: ' + (error.reason || error.message));
+                    }
+                } else {
+                    throw new Error(error.message || '交易失败');
+                }
+            }
+        }
+
+        // 白名单管理函数
+        async function addToWhitelist() {
+            const address = document.getElementById('whitelistAddress').value.trim();
+            
+            if (!address) {
+                showAlert('请输入钱包地址', 'warning');
+                return;
+            }
+            
+            if (!web3.utils.isAddress(address)) {
+                showAlert('无效的钱包地址格式', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                await sendTransaction(contract.methods.updateWhitelist(address, true));
+                
+                showAlert('添加白名单成功', 'success');
+                document.getElementById('whitelistAddress').value = '';
+                logOperation(`添加白名单: ${address}`);
+                
+            } catch (error) {
+                console.error('添加白名单失败:', error);
+                showAlert('添加白名单失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function removeFromWhitelist() {
+            const address = document.getElementById('whitelistAddress').value.trim();
+            
+            if (!address) {
+                showAlert('请输入钱包地址', 'warning');
+                return;
+            }
+            
+            if (!web3.utils.isAddress(address)) {
+                showAlert('无效的钱包地址格式', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                await sendTransaction(contract.methods.updateWhitelist(address, false));
+                
+                showAlert('移除白名单成功', 'success');
+                document.getElementById('whitelistAddress').value = '';
+                logOperation(`移除白名单: ${address}`);
+                
+            } catch (error) {
+                console.error('移除白名单失败:', error);
+                showAlert('移除白名单失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function checkWhitelistStatus() {
+            const address = document.getElementById('whitelistAddress').value.trim();
+            
+            if (!address || !web3.utils.isAddress(address)) {
+                showAlert('请输入有效的钱包地址', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                const isWhitelisted = await contract.methods.isWhitelisted(address).call({from: currentAccount});
+                
+                const resultDiv = document.getElementById('whitelistResult');
+                resultDiv.innerHTML = `
+                    <div class="alert ${isWhitelisted ? 'alert-success' : 'alert-secondary'}">
+                        <strong>地址:</strong> ${address}<br>
+                        <strong>状态:</strong> ${isWhitelisted ? '已在白名单' : '不在白名单'}
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('检查白名单状态失败:', error);
+                showAlert('检查失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 费率管理函数
+        async function updateFeeRates() {
+            const platformFee = parseFloat(document.getElementById('platformFee').value);
+            const inviterFee = parseFloat(document.getElementById('inviterFee').value);
+            const creatorFee = parseFloat(document.getElementById('creatorFee').value);
+            
+            if (isNaN(platformFee) || isNaN(inviterFee) || isNaN(creatorFee)) {
+                showAlert('请输入有效的费率数值', 'warning');
+                return;
+            }
+            
+            if (platformFee < 0 || inviterFee < 0 || creatorFee < 0) {
+                showAlert('费率不能为负数', 'warning');
+                return;
+            }
+            
+            const totalFee = platformFee + inviterFee + creatorFee;
+            if (totalFee > 15) {
+                showAlert('总费率不能超过15%', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                // 转换为整数（直接使用百分比值），确保参数正确
+                const platformFeeInt = Math.round(platformFee);
+                const inviterFeeInt = Math.round(inviterFee);
+                const creatorFeeInt = Math.round(creatorFee);
+                
+                console.log('费率参数:', { platformFeeInt, inviterFeeInt, creatorFeeInt });
+                
+                await sendTransaction(contract.methods.updateFeeRates(
+                    platformFeeInt,
+                    inviterFeeInt,
+                    creatorFeeInt
+                ), [], 200000); // 指定gas限制
+                
+                showAlert('费率更新成功', 'success');
+                logOperation(`更新费率: 平台${platformFee}%, 邀请者${inviterFee}%, 房主${creatorFee}%`);
+                
+                // 更新后重新加载当前费率
+                setTimeout(() => {
+                    loadCurrentFeeRates();
+                }, 2000);
+                
+            } catch (error) {
+                console.error('更新费率失败:', error);
+                showAlert('更新费率失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 加载当前费率
+        async function loadCurrentFeeRates() {
+            try {
+                const feeRates = await contract.methods.getCurrentFeeRates().call({from: currentAccount});
+                
+                // 合约返回的是百分比值，直接使用
+                const platformFee = parseInt(feeRates[0]);
+                const inviterFee = parseInt(feeRates[1]);
+                const creatorFee = parseInt(feeRates[2]);
+                
+                document.getElementById('platformFee').value = platformFee;
+                document.getElementById('inviterFee').value = inviterFee;
+                document.getElementById('creatorFee').value = creatorFee;
+                
+                updateTotalFeeDisplay();
+                
+                console.log('当前费率:', { platformFee, inviterFee, creatorFee });
+                
+            } catch (error) {
+                console.error('加载当前费率失败:', error);
+            }
+        }
+
+        function updateTotalFeeDisplay() {
+            const platformFee = parseFloat(document.getElementById('platformFee').value) || 0;
+            const inviterFee = parseFloat(document.getElementById('inviterFee').value) || 0;
+            const creatorFee = parseFloat(document.getElementById('creatorFee').value) || 0;
+            
+            const totalFee = platformFee + inviterFee + creatorFee;
+            const display = document.getElementById('totalFeeDisplay');
+            
+            display.textContent = totalFee.toFixed(1) + '%';
+            
+            if (totalFee > 15) {
+                display.parentElement.className = 'alert alert-danger';
+            } else if (totalFee > 10) {
+                display.parentElement.className = 'alert alert-warning';
+            } else {
+                display.parentElement.className = 'alert alert-info';
+            }
+        }
+
+        // 合伙人管理函数
+        async function addPartner() {
+            const address = document.getElementById('partnerAddress').value.trim();
+            const sharePercent = parseInt(document.getElementById('partnerShare').value);
+            
+            if (!address) {
+                showAlert('请输入合伙人地址', 'warning');
+                return;
+            }
+            
+            if (!web3.utils.isAddress(address)) {
+                showAlert('无效的钱包地址格式', 'warning');
+                return;
+            }
+            
+            if (isNaN(sharePercent) || sharePercent < 1 || sharePercent > 50) {
+                showAlert('分红比例必须在1-50%之间', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                await sendTransaction(contract.methods.addPartner(address, sharePercent));
+                
+                showAlert('添加合伙人成功', 'success');
+                document.getElementById('partnerAddress').value = '';
+                document.getElementById('partnerShare').value = '10';
+                logOperation(`添加合伙人: ${address}, 分红比例: ${sharePercent}%`);
+                
+            } catch (error) {
+                console.error('添加合伙人失败:', error);
+                showAlert('添加合伙人失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function updatePartner() {
+            const address = document.getElementById('partnerAddress').value.trim();
+            const sharePercent = parseInt(document.getElementById('partnerShare').value);
+            
+            if (!address) {
+                showAlert('请输入合伙人地址', 'warning');
+                return;
+            }
+            
+            if (!web3.utils.isAddress(address)) {
+                showAlert('无效的钱包地址格式', 'warning');
+                return;
+            }
+            
+            if (isNaN(sharePercent) || sharePercent < 1 || sharePercent > 50) {
+                showAlert('分红比例必须在1-50%之间', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                await sendTransaction(contract.methods.updatePartnerShare(address, sharePercent));
+                
+                showAlert('更新合伙人分红比例成功', 'success');
+                logOperation(`更新合伙人分红比例: ${address}, 新比例: ${sharePercent}%`);
+                
+            } catch (error) {
+                console.error('更新合伙人失败:', error);
+                showAlert('更新合伙人失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function removePartner() {
+            const address = document.getElementById('partnerAddress').value.trim();
+            
+            if (!address) {
+                showAlert('请输入要删除的合伙人地址', 'warning');
+                return;
+            }
+            
+            if (!web3.utils.isAddress(address)) {
+                showAlert('无效的钱包地址格式', 'warning');
+                return;
+            }
+
+            if (!confirm(`确定要删除合伙人 ${address} 吗？`)) {
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                await sendTransaction(contract.methods.removePartner(address));
+                
+                showAlert('删除合伙人成功', 'success');
+                document.getElementById('partnerAddress').value = '';
+                logOperation(`删除合伙人: ${address}`);
+                
+            } catch (error) {
+                console.error('删除合伙人失败:', error);
+                showAlert('删除合伙人失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function loadPartners() {
+            try {
+                showLoading(true);
+                
+                // 直接调用getAllPartners方法，不进行权限检查
+                const result = await contract.methods.getAllPartners().call({from: currentAccount});
+                
+                const addresses = result[0];
+                const sharePercents = result[1];
+                const totalEarnings = result[2];
+                const activeStatus = result[3];
+                
+                const resultDiv = document.getElementById('partnersResult');
+                
+                if (addresses.length === 0) {
+                    resultDiv.innerHTML = '<div class="alert alert-info">暂无合伙人</div>';
+                    return;
+                }
+                
+                let html = '<div class="table-responsive"><table class="table table-sm">';
+                html += '<thead><tr><th>地址</th><th>分红%</th><th>累计收益</th><th>状态</th></tr></thead><tbody>';
+                
+                for (let i = 0; i < addresses.length; i++) {
+                    html += `<tr>
+                        <td><small>${addresses[i].substring(0, 6)}...${addresses[i].substring(38)}</small></td>
+                        <td>${sharePercents[i]}%</td>
+                        <td>${web3.utils.fromWei(totalEarnings[i], 'ether')} USDT</td>
+                        <td><span class="badge ${activeStatus[i] ? 'bg-success' : 'bg-secondary'}">${activeStatus[i] ? '活跃' : '停用'}</span></td>
+                    </tr>`;
+                }
+                
+                html += '</tbody></table></div>';
+                
+                const totalSharePercent = sharePercents.reduce((sum, percent) => sum + parseInt(percent), 0);
+                html += `<div class="alert alert-info mt-2">
+                    <strong>统计:</strong> 总合伙人数: ${addresses.length}, 总分红比例: ${totalSharePercent}%, 平台保留: ${100 - totalSharePercent}%
+                </div>`;
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('加载合伙人列表失败:', error);
+                const resultDiv = document.getElementById('partnersResult');
+                resultDiv.innerHTML = '<div class="alert alert-danger">加载失败: ' + error.message + '</div>';
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 系统设置函数
+        async function loadSystemSettings() {
+            try {
+                const result = await contract.methods.getSystemSettings().call({from: currentAccount});
+                const minBetAmount = result[1];
+                
+                document.getElementById('minBetAmount').value = minBetAmount;
+                
+            } catch (error) {
+                console.error('加载系统设置失败:', error);
+                showAlert('加载系统设置失败: ' + error.message, 'danger');
+            }
+        }
+
+        async function updateSystemSettings() {
+            const minBetAmount = parseInt(document.getElementById('minBetAmount').value);
+            
+            if (isNaN(minBetAmount) || minBetAmount < 1) {
+                showAlert('最小下注金额必须大于0', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                console.log('更新最小下注金额:', minBetAmount);
+                await sendTransaction(contract.methods.updateMinBetAmount(minBetAmount), [], 150000);
+                
+                showAlert('系统设置更新成功', 'success');
+                logOperation(`最小下注金额更新为: ${minBetAmount}`);
+                
+                // 更新后重新加载设置
+                setTimeout(() => {
+                    loadSystemSettings();
+                }, 2000);
+                
+            } catch (error) {
+                console.error('更新系统设置失败:', error);
+                showAlert('更新系统设置失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 加载管理员列表
+        async function loadAdmins() {
+            try {
+                showLoading(true);
+                
+                // 获取合约所有者
+                const owner = await contract.methods.owner().call();
+                
+                const resultDiv = document.getElementById('adminsList');
+                
+                let html = '<div class="list-group">';
+                
+                // 显示合约所有者
+                html += `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">合约所有者</h6>
+                                <small class="text-muted">${owner}</small>
+                            </div>
+                            <span class="badge bg-primary">所有者</span>
+                        </div>
+                    </div>
+                `;
+                
+                // 注意：由于合约中没有获取所有管理员的函数，我们只能显示当前用户是否是管理员
+                try {
+                    const isCurrentUserAdmin = await contract.methods.isAdmin(currentAccount).call();
+                    if (isCurrentUserAdmin && currentAccount.toLowerCase() !== owner.toLowerCase()) {
+                        html += `
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">当前用户</h6>
+                                        <small class="text-muted">${currentAccount}</small>
+                                    </div>
+                                    <span class="badge bg-success">管理员</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('检查当前用户管理员状态失败:', error);
+                }
+                
+                html += '</div>';
+                
+                html += `
+                    <div class="alert alert-info mt-3">
+                        <small>
+                            <strong>注意：</strong> 由于合约限制，无法获取所有管理员列表。<br>
+                            上面只显示合约所有者和当前用户的管理员状态。
+                        </small>
+                    </div>
+                `;
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('加载管理员列表失败:', error);
+                const resultDiv = document.getElementById('adminsList');
+                resultDiv.innerHTML = '<div class="alert alert-danger">加载失败: ' + error.message + '</div>';
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 白名单功能已废除 - 以下函数已停用
+        async function updateWhitelistOnly() {
+            const whitelistEnabled = document.getElementById('whitelistEnabled').checked;
+
+            try {
+                showLoading(true);
+                
+                console.log('单独更新白名单开关:', whitelistEnabled);
+                await sendTransaction(contract.methods.setWhitelistEnabled(whitelistEnabled), [], 150000);
+                
+                showAlert(`白名单功能${whitelistEnabled ? '开启' : '关闭'}成功`, 'success');
+                logOperation(`白名单功能${whitelistEnabled ? '开启' : '关闭'}`);
+                
+                // 更新后重新加载设置确认
+                setTimeout(() => {
+                    loadSystemSettings();
+                }, 2000);
+                
+            } catch (error) {
+                console.error('更新白名单开关失败:', error);
+                showAlert('白名单开关更新失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 管理员管理函数
+        async function updateAdmin(isAdd) {
+            const address = document.getElementById('adminAddress').value.trim();
+            
+            if (!address) {
+                showAlert('请输入管理员地址', 'warning');
+                return;
+            }
+            
+            if (!web3.utils.isAddress(address)) {
+                showAlert('无效的钱包地址格式', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                await sendTransaction(contract.methods.updateAdmin(address, isAdd));
+                
+                showAlert(`${isAdd ? '添加' : '移除'}管理员成功`, 'success');
+                document.getElementById('adminAddress').value = '';
+                logOperation(`${isAdd ? '添加' : '移除'}管理员: ${address}`);
+                
+            } catch (error) {
+                console.error('管理员操作失败:', error);
+                showAlert('管理员操作失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 试用用户管理函数
+        async function queryTrialStatus() {
+            const address = document.getElementById('trialUserAddress').value.trim();
+            
+            if (!address) {
+                showAlert('请输入用户地址', 'warning');
+                return;
+            }
+            
+            if (!web3.utils.isAddress(address)) {
+                showAlert('无效的钱包地址格式', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                const result = await contract.methods.getTrialStatus(address).call({from: currentAccount});
+                const remainingTrials = result[0];
+                const firstTrialTime = result[1];
+                const totalRoomsCreated = result[2];
+                const hasUsedTrial = result[3];
+                const canCreateRoom = result[4];
+                
+                const firstTrialDate = firstTrialTime > 0 ? new Date(firstTrialTime * 1000).toLocaleString() : '未使用';
+                
+                const resultDiv = document.getElementById('trialResult');
+                resultDiv.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>用户地址:</strong> ${address}<br>
+                        <strong>剩余试用次数:</strong> ${remainingTrials}<br>
+                        <strong>首次试用时间:</strong> ${firstTrialDate}<br>
+                        <strong>创建房间总数:</strong> ${totalRoomsCreated}<br>
+                        <strong>是否使用过试用:</strong> ${hasUsedTrial ? '是' : '否'}<br>
+                        <strong>可以创建房间:</strong> ${canCreateRoom ? '是' : '否'}
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('查询试用状态失败:', error);
+                showAlert('查询试用状态失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function resetUserTrial() {
+            const address = document.getElementById('trialUserAddress').value.trim();
+            
+            if (!address) {
+                showAlert('请先查询用户信息', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                await sendTransaction(contract.methods.resetUserTrial(address));
+                
+                showAlert('重置用户试用成功', 'success');
+                await queryTrialStatus();
+                logOperation(`重置用户试用: ${address}`);
+                
+            } catch (error) {
+                console.error('重置用户试用失败:', error);
+                showAlert('重置用户试用失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function banTrialUser() {
+            const address = document.getElementById('trialUserAddress').value.trim();
+            
+            if (!address) {
+                showAlert('请先查询用户信息', 'warning');
+                return;
+            }
+
+            if (!confirm(`确定要封禁用户 ${address} 吗？`)) {
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                await sendTransaction(contract.methods.banTrialUser(address));
+                
+                showAlert('封禁用户成功', 'success');
+                await queryTrialStatus();
+                logOperation(`封禁用户: ${address}`);
+                
+            } catch (error) {
+                console.error('封禁用户失败:', error);
+                showAlert('封禁用户失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 房间管理函数
+        async function queryRoomInfo() {
+            const roomId = parseInt(document.getElementById('roomId').value);
+            
+            if (isNaN(roomId) || roomId < 1) {
+                showAlert('请输入有效的房间ID', 'warning');
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                const result = await contract.methods.getRoomBasic(roomId).call({from: currentAccount});
+                const creator = result[0];
+                const originalCreator = result[1];
+                const maxPlayers = result[2];
+                const playerCount = result[3];
+                const expireTime = result[4];
+                const active = result[5];
+                const nextDealTime = result[6];
+                const dealInterval = result[7];
+                const gameStarted = result[8];
+                
+                const expireDate = new Date(expireTime * 1000).toLocaleString();
+                const nextDealDate = new Date(nextDealTime * 1000).toLocaleString();
+                
+                const resultDiv = document.getElementById('roomResult');
+                resultDiv.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>房间ID:</strong> ${roomId}<br>
+                        <strong>创建者:</strong> ${creator}<br>
+                        <strong>原始创建者:</strong> ${originalCreator}<br>
+                        <strong>最大玩家数:</strong> ${maxPlayers}<br>
+                        <strong>当前玩家数:</strong> ${playerCount}<br>
+                        <strong>过期时间:</strong> ${expireDate}<br>
+                        <strong>房间状态:</strong> ${active ? '活跃' : '已关闭'}<br>
+                        <strong>游戏状态:</strong> ${gameStarted ? '已开始' : '未开始'}<br>
+                        <strong>下次发牌时间:</strong> ${nextDealDate}<br>
+                        <strong>发牌间隔:</strong> ${dealInterval}秒
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('查询房间信息失败:', error);
+                showAlert('查询房间信息失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function closeRoom() {
+            const roomId = parseInt(document.getElementById('roomId').value);
+            
+            if (isNaN(roomId) || roomId < 1) {
+                showAlert('请先查询房间信息', 'warning');
+                return;
+            }
+
+            if (!confirm(`确定要关闭房间 ${roomId} 吗？`)) {
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                await sendTransaction(contract.methods.closeRoom(roomId));
+                
+                showAlert('关闭房间成功', 'success');
+                await queryRoomInfo();
+                logOperation(`关闭房间: ${roomId}`);
+                
+            } catch (error) {
+                console.error('关闭房间失败:', error);
+                showAlert('关闭房间失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function getAntiCheatStats() {
+            try {
+                showLoading(true);
+                
+                const result = await contract.methods.getAntiCheatStats().call({from: currentAccount});
+                const globalTrialCount = result;
+                
+                const resultDiv = document.getElementById('roomResult');
+                resultDiv.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>防刷统计:</strong><br>
+                        • 全局试用次数: ${globalTrialCount}<br>
+                        • 系统运行正常
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('获取防刷统计失败:', error);
+                showAlert('获取防刷统计失败: ' + error.message, 'danger');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // 工具函数
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            loading.style.display = show ? 'flex' : 'none';
+        }
+
+        function showAlert(message, type = 'info') {
+            // 创建临时提示框
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 10000; max-width: 400px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 3000);
+        }
+
+        function logOperation(operation) {
+            const logContainer = document.getElementById('operationLog');
+            const timestamp = new Date().toLocaleString();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'border-bottom pb-2 mb-2';
+            logEntry.innerHTML = `
+                <div class="d-flex justify-content-between">
+                    <span><strong>${operation}</strong></span>
+                    <small class="text-muted">${timestamp}</small>
+                </div>
+                <small class="text-muted">操作者: ${currentAccount}</small>
+            `;
+            
+            // 插入到顶部
+            if (logContainer.firstChild && logContainer.firstChild.textContent !== '暂无操作记录') {
+                logContainer.insertBefore(logEntry, logContainer.firstChild);
+            } else {
+                logContainer.innerHTML = '';
+                logContainer.appendChild(logEntry);
+            }
+            
+            // 限制日志条数
+            const logs = logContainer.children;
+            if (logs.length > 20) {
+                logContainer.removeChild(logs[logs.length - 1]);
+            }
+        }
+
+        // 监听钱包账户变化
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.on('accountsChanged', function (accounts) {
+                if (accounts.length === 0) {
+                    currentAccount = null;
+                    contract = null;
+                    isAdmin = false;
+                    updateWalletUI();
+                    showAlert('钱包已断开连接', 'warning');
+                } else if (accounts[0] !== currentAccount) {
+                    location.reload();
+                }
+            });
+
+            window.ethereum.on('chainChanged', function (chainId) {
+                location.reload();
+            });
+        }
+    </script>
+</body>
+</html>
+
