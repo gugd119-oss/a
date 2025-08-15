@@ -66,13 +66,19 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h1><i class="bi bi-gear-fill"></i> 三公游戏管理后台</h1>
-                    <p class="mb-0">管理费率、合伙人、管理员和系统设置</p>
+                    <h1><i class="bi bi-gear-fill"></i> <span data-i18n="admin.title">三公游戏管理后台</span></h1>
+                    <p class="mb-0" data-i18n="admin.subtitle">管理费率、合伙人、管理员和系统设置</p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <div id="walletInfo">
-                        <span id="walletAddress" class="badge bg-light text-dark">未连接钱包</span>
-                        <button id="connectWalletBtn" class="btn btn-outline-light btn-sm ms-2">连接钱包</button>
+                    <div id="walletInfo" class="d-inline-flex align-items-center">
+                        <span id="walletAddress" class="badge bg-light text-dark" data-i18n="wallet.disconnected">未连接钱包</span>
+                        <button id="connectWalletBtn" class="btn btn-outline-light btn-sm ms-2" data-i18n="wallet.connect">连接钱包</button>
+                        <select id="langSelectorAdmin" class="form-select form-select-sm bg-transparent text-white border-light ms-2" style="width: 140px;">
+                            <option value="zh-CN">简体中文</option>
+                            <option value="zh-TW">繁體中文</option>
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -86,7 +92,7 @@
         </div>
 
         <!-- 连接钱包提示 -->
-        <div id="walletAlert" class="alert alert-info" role="alert">
+        <div id="walletAlert" class="alert alert-info" role="alert" data-i18n="admin.walletTip">
             <i class="bi bi-wallet2"></i> 请先连接您的钱包以使用管理功能
         </div>
 
